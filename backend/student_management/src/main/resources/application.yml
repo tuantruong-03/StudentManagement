@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: student_management
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: Tuantruong131203
+    url: jdbc:mysql://localhost:3306/student_management?useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    username: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+    show-sql: false
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
