@@ -73,7 +73,6 @@ public class StudentManagementApplication {
 	        	studentRole = roleRepository.save(new Role("ROLE_STUDENT"));
 	            System.out.println(studentRole);
 	        }
-	        
 	        insertUser(new User("admin","anhtuantruong3021@gmail.com", passwordEncoder.encode("123"), "Tuan", "Truong", new Date(), null, null), "ROLE_ADMIN", roleRepository, userRepository);
 	        insertUser(new User("johndoe","johndoe@example.com", passwordEncoder.encode("123"), "John", "Doe", new Date(), null, null), "ROLE_STUDENT", roleRepository, userRepository);
 	        insertUser(new User("janedoe","janedoe@example.com", passwordEncoder.encode("123"), "Jane", "Doe", new Date(), null, null), "ROLE_STUDENT", roleRepository, userRepository);
