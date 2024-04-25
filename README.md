@@ -1,6 +1,6 @@
 - Start
     Frontend:
-        cd frontend/student_management
+        cd frontend
         npm start
     Backend:
         cd src/main/java/student/management/code/StudentManagementApplication

@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,6 +24,7 @@ import student.mangement.code.repository.UserRepository;
 
 @SpringBootApplication
 public class StudentManagementApplication {
+
 	
 	private List<User> students = new ArrayList<>();
 	private List<User> teachers = new ArrayList<>();
@@ -95,6 +97,8 @@ public class StudentManagementApplication {
 	        insertUser(new User("peterwright","peterwright@example.com", passwordEncoder.encode("123"), "Peter", "Wright", new Date(), null, null), "ROLE_TEACHER", roleRepository, userRepository);
 	        insertUser(new User("quinnlopez","quinnlopez@example.com", passwordEncoder.encode("123"), "Quinn", "Lopez", new Date(), null, null), "ROLE_TEACHER", roleRepository, userRepository);
 	        
+
+
 	        if (students.size() > 0) {
 	        	String[] courseNames = {"Introduction to Python", "Advanced Java", "Web Development", "Algorithms and Data Structures", "Database Systems"}; 
 	        	Integer[] maxNumberOfStudents = {30, 25, 40, 35, 30};

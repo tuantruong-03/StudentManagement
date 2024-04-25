@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react'
+import {Table} from 'react-bootstrap'
 
 const STUDENT_API = 'http://localhost:8080/api/students'
 
 function ListOfStudents() {
-    const [data, setData] = useState([]);
+    const [data, setData] = useState<any[]>([]);
     useEffect(() => {
-        async function fetchData(url) {
+        async function fetchData(url: string) {
             try {
                 const response = await fetch(url);
-                const data = await response.json();
+                const data: any[] = await response.json();
                 console.log(data)
                 setData(data)
                 return data;
@@ -20,9 +21,9 @@ function ListOfStudents() {
 
     }, [])
     return (
-        <table className="table">
-            <thead className="thead-dark">
-                <tr>
+        <Table bordered>
+            <thead className='thead' >
+                <tr style={{backgroundColor: 'lightblue'}}>
                     <th scope="col">#</th>
                     <th scope="col">First</th>
                     <th scope="col">Last</th>
@@ -30,16 +31,23 @@ function ListOfStudents() {
                 </tr>
             </thead>
             <tbody>
-                {data.map(student => { return (
+                <tr>
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                </tr>
+                {data.map(student =>  (
                     <tr key={student.userId}>
                         <th scope="row">{student.userId}</th>
                         <td>{student.firstName}</td>
                         <td>{student.lastName}</td>
                         <td>{student.email}</td>
                     </tr>
-                )})}
+                ))}
             </tbody>
-        </table>
+        </Table>
     )
+
 }
 export default ListOfStudents;
