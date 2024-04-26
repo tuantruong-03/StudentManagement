@@ -27,12 +27,22 @@ public class ApiController {
 	
 	@GetMapping("/students")
 	@ResponseBody
-	List<User> students() {
+	List<User> getStudents() {
 		return userService.findAllUsers().stream()
                       .filter(user -> user.getAuthorities().stream()
                                          .anyMatch(authority -> "ROLE_STUDENT".equals(authority.getAuthority())))
 					.toList();
 	}
+
+	@GetMapping("/teachers")
+	@ResponseBody
+	List<User> getTeachers() {
+		return userService.findAllUsers().stream()
+						.filter(user -> user.getAuthorities().stream()
+						.anyMatch(authority -> "ROLE_TEACHER".equals(authority.getAuthority())))
+		.toList();
+	}
+
 	@GetMapping("/token")
 	@ResponseBody
 	String getToken() {

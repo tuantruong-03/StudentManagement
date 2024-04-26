@@ -1,28 +1,36 @@
-import { useContext, createContext, Component, FC, useState, ReactNode, useEffect } from "react"
-import { useNavigate } from "react-router-dom";
+import { createContext, useState, useEffect, ReactNode, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 
 const LOGIN_POST = 'http://localhost:8080/auth/login'
 
+// Initial state with authentication check
+const getToken = () => localStorage.getItem("token");
+const getUser = () => {
+    const userJson = localStorage.getItem("user");
+    return userJson ? JSON.parse(userJson) : null;
+  };
 
 const authStateInit = {
-    isAuthenticated: false,  // example state
-    user: null,              // example state
-    token: localStorage.getItem("site") || null,
-    login: (input: object) => { },
-    logout: () => { },
+    isAuthenticated: !!getUser(),  // Checks if token is not null
+    user: getUser(),                     // Example state
+    token: getToken(),
+    login: async (input: object) => Promise<any>,
+    logout: () => {},
 };
 
 const AuthContext = createContext(authStateInit);
-// Define the type for the props of AuthProvider (including any auth-related states or functions)
+
 interface AuthProviderProps {
     children: ReactNode;
 }
 
-const AuthProvider = ({ children }: AuthProviderProps) => {
-    // You might want to include authentication state and functions here
-    const [authState, setAuthState] = useState(authStateInit)
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+    const [authState, setAuthState] = useState(authStateInit);
     const navigate = useNavigate();
-    const login = async (input: object) => {
+
+    // Define login function
+    const login = async (input: object): Promise<any> => {
         try {
             const response = await fetch(LOGIN_POST, {
                 method: 'POST',
@@ -30,10 +38,8 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(input)
-            })
+            });
             const data = await response.json();
-            console.log(data)
-            // Data includes {token, user}
             if (response.ok) {
                 setAuthState(prev => ({
                     ...prev,
@@ -41,34 +47,46 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
                     user: data.user,
                     token: data.token
                 }));
-                localStorage.setItem("site", data.token);  // Save token in localStorage
-                navigate("/");  // Navigate to the dashboard after successful login
+                localStorage.setItem("user", JSON.stringify(data.user));
+                localStorage.setItem("token", data.token);  // Save token in localStorage
+               
+                navigate("/");
+                return null;
             } else {
-                throw new Error('Login failed!');
+                return "Invalid username or password";
             }
-
         } catch (err) {
-            throw err;
+            console.error("Login Error: ", err);
         }
-    }
+    };
+
+    // Define logout function
     const logout = () => {
-        setAuthState((prevAuthState) => {
-            return {
-                ...prevAuthState,
-                isAuthenticated: false,
-                user: null,
-                token: null
-            }
-        })
-    }
-    // setAuthState only once
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        setAuthState({
+            isAuthenticated: false,
+            user: null,
+            token: null,
+            login,
+            logout,
+        });
+        navigate("/login");
+    };
+
+    // Runs when reload page, and run only one time
     useEffect(() => {
         setAuthState(prev => ({
             ...prev,
             login,
             logout,
         }));
+        // console.log("authState in useEffect ", authState)
     }, []);
+
+    // console.log("authState ", authState) // Run 4 times
+
+
 
     return (
         <AuthContext.Provider value={authState}>
@@ -77,9 +95,9 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     );
 };
 
+export const useAuth = () => {
+    return useContext(AuthContext)
+}
 
 
 export default AuthProvider;
-export const useAuth = () => {
-    return useContext(AuthContext);
-}

@@ -25,5 +25,9 @@ CREATE TABLE courses (
     PRIMARY KEY (course_id)
 );
 
+-- QUERY IF NECCESSARY
+-- SELECT count(*) FROM users u join users_roles ur join roles r on u.user_id = ur.user_id and ur.role_id = r.role_id
+-- where  r.authority = 'ROLE_STUDENT' ;
+
 
     

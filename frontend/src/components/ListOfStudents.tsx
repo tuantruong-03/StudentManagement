@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect, FC, ReactNode } from 'react'
 import {Table} from 'react-bootstrap'
 
 const STUDENT_API = 'http://localhost:8080/api/students'
