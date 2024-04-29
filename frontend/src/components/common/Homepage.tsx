@@ -10,10 +10,15 @@ const Homepage = () => {
     const isStudent: boolean = user.authorities.some((auth: { authority: string; }) => auth.authority === 'ROLE_STUDENT');
     if (isAdmin) {
         return (
-            <AdminRoutes/>
+            <AdminRoutes />
         )
     }
-    return <>Welcome {user.firstName + " " + user.lastName}</>
+    return <>
+        Welcome {user.firstName + " " + user.lastName}
+        <li className="nav-item">
+            <button className="btn btn-outline-danger" onClick={auth.logout}>Logout</button>
+        </li>
+    </>
 }
 
 export default Homepage;

@@ -4,9 +4,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import student.mangement.code.model.User;
@@ -31,6 +32,17 @@ public class UserServiceImpl implements UserService {
 			return null;
 		}
 		return user.get();
+	}
+
+	@Override
+	public long countByAuthority(String authority) {
+		return userRepository.countByAuthority(authority);
+	}
+
+	@Override
+	public List<User> findUsersByAuthorityAndPagination(String authority, int page, int size) {
+		Pageable pageable = PageRequest.of(page,size);
+		return userRepository.findUsersByAuthorityAndPagination(authority, pageable);
 	}
 
 }

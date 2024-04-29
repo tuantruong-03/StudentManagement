@@ -1,7 +1,6 @@
 import React, { useState, useEffect, FC, ReactNode } from 'react'
 import {Table} from 'react-bootstrap'
-
-const STUDENT_API = 'http://localhost:8080/api/students'
+const STUDENT_API = process.env.REACT_APP_BASE_URL + '/api/students'
 
 function ListOfStudents() {
     const [data, setData] = useState<any[]>([]);

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import student.mangement.code.dto.UserDTO;
 import student.mangement.code.model.User;
 import student.mangement.code.service.UserService;
 import student.mangement.code.utils.JwtUtil;
@@ -41,7 +42,7 @@ public class AuthController {
         JwtUtil jwtUtil = new JwtUtil();
         String token = jwtUtil.generateToken(user);
         response.put("token", token);
-        response.put("user",user);
+        response.put("user",new UserDTO(user));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
