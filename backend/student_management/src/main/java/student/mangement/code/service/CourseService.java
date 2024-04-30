@@ -9,5 +9,6 @@ import student.mangement.code.model.Course;
 
 public interface CourseService {
 	List<Course> findAllCourses();
-
+	List<Course> findCoursesByPage(int page, int size);
+	long countCourse();
 }

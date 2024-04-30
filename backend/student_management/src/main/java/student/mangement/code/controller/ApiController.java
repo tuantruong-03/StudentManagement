@@ -27,21 +27,27 @@ import student.mangement.code.utils.JwtUtil;
 @RequestMapping("/api")
 public class ApiController {
 	private String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lIiwiZXhwIjoxNzEzOTgxODkwLCJpYXQiOjE3MTM5NjM4OTB9.aAELEE5oWAMUOPnLQwC19QtaLW1gvt4qFH4ZuaqnfeEuJm4tOamgVIS1_GvbRE1GOnlB5eNC16sPHHb3RMq4hA";
-	
 	@Autowired
 	CourseService courseService;
 	@Autowired
 	UserService userService;
-
-
-
+	// Teacher API
+	@GetMapping("/allTeachers")
+	@ResponseBody
+	ResponseEntity<List<UserDTO>> getTeachers() {
+		List<UserDTO> userList = userService.findAllUsers().stream()
+                      .filter(user -> user.getAuthorities().stream()
+                                         .anyMatch(authority -> "ROLE_TEACHER".equals(authority.getAuthority())))
+										 .map(user -> new UserDTO(user))
+					.toList();
+		return new ResponseEntity<>(userList, HttpStatus.OK);
+	}
 	@GetMapping("/numberOfTeachers")
 	@ResponseBody
 	ResponseEntity<Long> countTeachers() {
 		Long count = userService.countByAuthority("ROLE_TEACHER");
 		return new ResponseEntity<>(count,HttpStatus.OK);
 	}
-
 	@GetMapping("/teachers")
 	@ResponseBody
 	ResponseEntity<List<UserDTO>> getTeachersByPage(@RequestParam Map<String, String> param) {
@@ -55,6 +61,24 @@ public class ApiController {
 			.map(user -> new UserDTO(user))
 			.toList();
 		return new ResponseEntity<>(userDTOs,HttpStatus.OK);
+	}
+	// Student API	
+	@GetMapping("/allStudents")
+	@ResponseBody
+	ResponseEntity<List<UserDTO>> getStudents() {
+		List<UserDTO> userList = userService.findAllUsers().stream()
+                      .filter(user -> user.getAuthorities().stream()
+                                         .anyMatch(authority -> "ROLE_STUDENT".equals(authority.getAuthority())))
+										 .map(user -> new UserDTO(user))
+					.toList();
+		return new ResponseEntity<>(userList, HttpStatus.OK);
+	}
+
+	@GetMapping("/numberOfStudents")
+	@ResponseBody
+	ResponseEntity<Long> countStudents() {
+		Long count = userService.countByAuthority("ROLE_STUDENT");
+		return new ResponseEntity<>(count,HttpStatus.OK);
 	}
 
 	@GetMapping("/students")
@@ -71,40 +95,9 @@ public class ApiController {
 			.toList();
 		return new ResponseEntity<>(userDTOs,HttpStatus.OK);
 	}
+	// Course API
 
-
-
-	@GetMapping("/numberOfStudents")
-	@ResponseBody
-	ResponseEntity<Long> countStudents() {
-		Long count = userService.countByAuthority("ROLE_STUDENT");
-		return new ResponseEntity<>(count,HttpStatus.OK);
-	}
 	
-	@GetMapping("/allStudents")
-	@ResponseBody
-	ResponseEntity<List<UserDTO>> getStudents() {
-		List<UserDTO> userList = userService.findAllUsers().stream()
-                      .filter(user -> user.getAuthorities().stream()
-                                         .anyMatch(authority -> "ROLE_STUDENT".equals(authority.getAuthority())))
-										 .map(user -> new UserDTO(user))
-					.toList();
-		return new ResponseEntity<>(userList, HttpStatus.OK);
-	}
-
-	@GetMapping("/allTeachers")
-	@ResponseBody
-	ResponseEntity<List<UserDTO>> getTeachers() {
-		List<UserDTO> userList = userService.findAllUsers().stream()
-                      .filter(user -> user.getAuthorities().stream()
-                                         .anyMatch(authority -> "ROLE_TEACHER".equals(authority.getAuthority())))
-										 .map(user -> new UserDTO(user))
-					.toList();
-		return new ResponseEntity<>(userList, HttpStatus.OK);
-	}
-
-
-
 	@GetMapping("/token")
 	@ResponseBody
 	String getToken() {
