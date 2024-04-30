@@ -1,12 +1,12 @@
 import { Table } from "react-bootstrap";
 
-interface TableUserProps {
+interface UserTableProps {
     users: any[],
     page: number,
     size: number
 }
 
-const TableUser = (props: TableUserProps) => {
+const UserTable = (props: UserTableProps) => {
     const {users, page, size} = props;
     return (
         <div style={{ overflowX: 'auto' }}>
@@ -33,4 +33,4 @@ const TableUser = (props: TableUserProps) => {
         </div>
       );
 }
-export default TableUser
+export default UserTable

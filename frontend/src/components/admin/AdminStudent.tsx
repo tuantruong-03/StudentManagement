@@ -1,20 +1,21 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Table } from 'react-bootstrap'
-import TableUser from "./common/TableUser"
+import TableUser from "./common/UserTable"
+import {useSearchParams} from 'react-router-dom'
+import UserPagination from "./common/UserPagination"
 
 const API_URL = process.env.REACT_APP_BASE_URL + '/api'
 console.log(API_URL)
 
-const AdminStudent = () => {
-    const [data, setData] = useState<any[]>([]);
-    const [page, setPage] = useState<number>(1);
-    const [totalPage, setTotalPage] = useState<number>(0); // Total number of students
-    const size = 5;
 
+const AdminStudent = () => {
+    const [totalPage, setTotalPage] = useState<number>(0); // Total number of teachers
+    const size = 5;
+    // Fetch number of users
     useEffect(() => {
         async function fetchData() {
             const response = await fetch(API_URL + `/numberOfStudents`);
-            const data = await response.json(); // Total number of students
+            const data = await response.json(); // Total number of teachers
             return data;
         }
         fetchData().then(data => {
@@ -23,41 +24,7 @@ const AdminStudent = () => {
 
         })
     }, [])
-
-    useEffect(() => {
-        async function fetchData() {
-            const response = await fetch(API_URL + `/students?page=${page}`);
-            const data = await response.json();
-            setData(data)
-            // console.log(data)
-        }
-        fetchData()
-
-    }, [page])
-
-    const handleClick = (event: any) => {
-        const page = event.target.textContent;
-        setPage(page)
-    }
-
-
-
-    return <>
-        <TableUser users={data} size={size} page={page}/>
-        <nav aria-label="Page navigation example">
-            <ul className="pagination justify-content-center">
-                <li className="page-item"><button className="page-link">Previous</button></li>
-                {/* Generate page */}
-                {Array.from({ length: totalPage }, (_, index) => (
-                    <li key={index} className="page-item">
-                        <button onClick={handleClick} className="page-link">{index + 1}</button>
-                    </li>
-                ))}
-                {/*  */}
-                <li className="page-item"><button className="page-link">Next</button></li>
-            </ul>
-        </nav>
-    </>
+   return (<UserPagination totalPage={totalPage} usersByPageApi={API_URL + '/students'}/>)
 }
 
 export default AdminStudent

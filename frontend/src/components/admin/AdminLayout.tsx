@@ -2,8 +2,8 @@ import { FC } from "react";
 import { Outlet } from "react-router-dom";
 import { useAuth } from "../../hooks/AuthProvider";
 import { Button } from "react-bootstrap";
-import Header from "./Header";
-import Sidebar from "./Sidebar";
+import Header from "./common/Header";
+import Sidebar from "./common/Sidebar";
 
 
 const AdminLayout = () => {
