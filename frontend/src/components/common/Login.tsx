@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { useAuth } from '../../hooks/AuthProvider';
+import Cookies from 'js-cookie';
 
 function Login() {
     const [input, setInput] = useState({

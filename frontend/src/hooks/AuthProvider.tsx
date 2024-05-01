@@ -1,13 +1,23 @@
 import { createContext, useState, useEffect, ReactNode, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
+import Cookies from 'js-cookie';
+
+const hours = 3;
+const expiryDate = new Date();
+expiryDate.setTime(expiryDate.getTime() + (hours * 60 * 60 * 1000)); // Milliseconds conversion
+
 
 
 const LOGIN_POST = 'http://localhost:8080/auth/login'
 
 // Initial state with authentication check
-const getToken = () => localStorage.getItem("token");
+const getToken = () => {
+    const token = Cookies.get('token');
+    return token ? token : null
+} 
 const getUser = () => {
-    const userJson = localStorage.getItem("user");
+    const userJson = Cookies.get('user');
     return userJson ? JSON.parse(userJson) : null;
   };
 
@@ -40,6 +50,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 body: JSON.stringify(input)
             });
             const data = await response.json();
+            console.log(data)
             if (response.ok) {
                 setAuthState(prev => ({
                     ...prev,
@@ -47,9 +58,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                     user: data.user,
                     token: data.token
                 }));
-                localStorage.setItem("user", JSON.stringify(data.user));
-                localStorage.setItem("token", data.token);  // Save token in localStorage
-               
+                Cookies.set("token", data.token, {path: "/", expires: expiryDate})
+                Cookies.set("user", JSON.stringify(data.user), {path: "/", expires: expiryDate})
                 navigate("/");
                 return null;
             } else {
@@ -62,8 +72,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     // Define logout function
     const logout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        Cookies.remove("token", {path: '/'});
+        Cookies.remove("user", {path: '/'})
         setAuthState({
             isAuthenticated: false,
             user: null,
