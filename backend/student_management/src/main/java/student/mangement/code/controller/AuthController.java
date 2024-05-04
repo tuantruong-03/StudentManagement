@@ -36,7 +36,8 @@ public class AuthController {
         Cookie cookie = new Cookie(name, value);
         cookie.setHttpOnly(false);
         cookie.setSecure(true);
-        cookie.setMaxAge(60*60*3*1000); // 3 hours
+        cookie.setMaxAge(60 * 60 * 3 * 1000); // 3 hours
+        cookie.setPath("/");   
         return cookie;
     }
 
@@ -47,31 +48,29 @@ public class AuthController {
 
     @PostMapping("/login")
     @ResponseBody
-    // "JsonProcessingException" for "ObjectMapper", "UnsupportedEncodingException" for "URLEncoder"
-    public ResponseEntity<Map<String, Object>> processPostLogin(@RequestBody Map<String, String> body, HttpServletResponse res) throws JsonProcessingException, UnsupportedEncodingException {
+    // "JsonProcessingException" for "ObjectMapper", "UnsupportedEncodingException"
+    // for "URLEncoder"
+    public ResponseEntity<Map<String, Object>> processPostLogin(@RequestBody Map<String, String> body,
+            HttpServletResponse res) throws JsonProcessingException, UnsupportedEncodingException {
         String username = body.get("username");
         String password = body.get("password");
-        Map <String, Object> bodyResponse = new HashMap<>();
-        User user = (User)userService.loadUserByUsername(username);
+        Map<String, Object> bodyResponse = new HashMap<>();
+        User user = (User) userService.loadUserByUsername(username);
         if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
             bodyResponse.put("message", "Failed");
             return new ResponseEntity<>(bodyResponse, HttpStatus.BAD_REQUEST);
         }
         JwtUtil jwtUtil = new JwtUtil();
         String token = jwtUtil.generateToken(user);
-        // Cookie tokenCookie = setCookie("token", token);
-        // ObjectMapper objectMapper = new ObjectMapper();
-        // String userJson = objectMapper.writeValueAsString(user);
-        // // Fix java.lang.IllegalArgumentException: An invalid character [34] was present in the Cookie value
-        // String encodedUserJson = URLEncoder.encode(userJson, StandardCharsets.UTF_8.toString());
-        // System.out.println(encodedUserJson);
-        // Cookie userCookie = setCookie("user",encodedUserJson);
-        // res.addCookie(userCookie);
-        // res.addCookie(tokenCookie);
-
-
-        bodyResponse.put("token", token);
-        bodyResponse.put("user", user);
+        // SetCookie
+        Cookie tokenCookie = setCookie("token", token);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String userJson = objectMapper.writeValueAsString(user);
+        String encodedUserJson = URLEncoder.encode(userJson, StandardCharsets.UTF_8.toString());  // Fix java.lang.IllegalArgumentException: An invalid character [34] was present in the Cookie value
+        Cookie userCookie = setCookie("user", encodedUserJson); 
+        res.addCookie(userCookie);
+        res.addCookie(tokenCookie);
+        bodyResponse.put("message", "Success");
         return new ResponseEntity<>(bodyResponse, HttpStatus.OK);
     }
 }

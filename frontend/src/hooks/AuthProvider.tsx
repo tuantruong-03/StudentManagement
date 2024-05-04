@@ -18,8 +18,13 @@ const getToken = () => {
 } 
 const getUser = () => {
     const userJson = Cookies.get('user');
-    return userJson ? JSON.parse(userJson) : null;
-  };
+    try {
+        return userJson ? JSON.parse(userJson) : null;
+    } catch (e) {
+        console.error('Failed to parse user data:', e);
+        return null;
+    }
+};
 
 const authStateInit = {
     isAuthenticated: !!getUser(),  // Checks if token is not null
@@ -44,22 +49,37 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         try {
             const response = await fetch(LOGIN_POST, {
                 method: 'POST',
+                credentials: "include", // This is critical for cookies to be sent and received
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
+                
                 body: JSON.stringify(input)
             });
             const data = await response.json();
-            console.log(data)
+            // After fetch backend server, server response with Set-Cookie header (include token and user)
             if (response.ok) {
-                setAuthState(prev => ({
-                    ...prev,
-                    isAuthenticated: true,
-                    user: data.user,
-                    token: data.token
-                }));
-                Cookies.set("token", data.token, {path: "/", expires: expiryDate})
-                Cookies.set("user", JSON.stringify(data.user), {path: "/", expires: expiryDate})
+                setAuthState(prev => {
+                    const userJson = Cookies.get('user');
+                    console.log("userJson", userJson)
+                    let user = null;
+                    if (userJson) {
+                        try {
+                            user = JSON.parse(userJson);
+                        } catch (error) {
+                            console.error('Failed to parse user JSON:', error);
+                            // Handle the error appropriately (maybe clear the cookie or notify the user)
+                        }
+                    }
+                    return {
+                        ...prev,
+                        isAuthenticated: true,
+                        user: user,
+                        token: Cookies.get('token') || null,
+                    };
+                });
+                // Cookies.set("token", data.token, {path: "/", expires: expiryDate})
+                // Cookies.set("user", JSON.stringify(data.user), {path: "/", expires: expiryDate})
                 navigate("/");
                 return null;
             } else {
