@@ -27,7 +27,6 @@ import student.mangement.code.model.User;
 import student.mangement.code.service.UserService;
 import student.mangement.code.utils.JwtUtil;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/auth")
 @Controller
 public class AuthController {

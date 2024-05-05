@@ -18,19 +18,22 @@ public class SpringSecurityConfiguration {
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
+	@Bean
+	JwtTokenFilter jwtTokenFilter() {
+		return new JwtTokenFilter();
+	}
 	
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http.csrf(csrf -> csrf.disable())
-				// .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))	
+				.cors(cors -> cors.disable())
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))	
 				.authorizeHttpRequests(auth ->{
-					// auth.requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN");
-					// auth.requestMatchers("/auth/login").permitAll();
-					// auth.anyRequest().authenticated();
-
-					auth.anyRequest().permitAll();
+					auth.requestMatchers("/auth/login").permitAll();
+					auth.requestMatchers("/admin/**").hasRole("ADMIN");
+					auth.anyRequest().authenticated();
 				})
-				// .addFilterBefore(new JwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
+				.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
 				.build();
 	}
 	

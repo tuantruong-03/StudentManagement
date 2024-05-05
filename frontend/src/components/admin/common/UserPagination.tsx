@@ -151,13 +151,14 @@ const UserPagination = (props: UserPaginationProps) => {
     useEffect(() => {
         async function fetchData() {
             try {
-                    const response = await fetch(usersByPageApi + `?page=${page}`, {
+                    const response = await axios(usersByPageApi + `?page=${page}`, {
                         method: 'GET',
-                        // headers: {
-                        //     'Authorization' : `Bearer ${token}`
-                        // },
+                        headers: {
+                            'Authorization' : `Bearer ${token}`,
+                        },
+                        withCredentials: true
                     });
-                const data = await response.json();
+                const data = await response.data;
                 setData(data)
             } catch(err) {
                 throw err

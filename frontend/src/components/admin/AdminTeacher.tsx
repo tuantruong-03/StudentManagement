@@ -24,16 +24,15 @@ const AdminTeacher = () => {
     useEffect(() => {
         async function fetchData() {
             try {
-                const response = await fetch(API_URL + "/numberOfTeachers", {
+                const response = await axios(API_URL + "/numberOfTeachers", {
                     method: 'GET',
-                    // headers: {
-                    //     'Authorization': `Bearer ${token}`
-                    // }
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    withCredentials: true
                 });
-                const data: any = await response.json(); // Assuming API returns the total number directly
-                console.log(data)
+                const data: any = await response.data; // Assuming API returns the total number directly
                 const totalPage = Math.ceil(data / size);
-                console.log(totalPage)
                 setTotalPage(totalPage);
             } catch (err) {
                 console.error('Error fetching data:', err);

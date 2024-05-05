@@ -104,7 +104,7 @@ public class ApiController {
 		JwtUtil jwtUtil = new JwtUtil();
 		User user = userService.findAllUsers().get(1);
 		System.out.println("/token");
-		Boolean isVerified = jwtUtil.validateToken(token, user);
+		Boolean isVerified = jwtUtil.validateToken(token);
 		Claims claims = jwtUtil.getAllClaimsFromToken(token);
 		System.out.println(claims.toString());
 		return claims.getSubject();
