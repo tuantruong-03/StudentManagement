@@ -59,10 +59,10 @@ function Login() {
                                     {/* <Form.Label>Username</Form.Label> */}
                                     <Form.Control
                                         onChange={handleInput}
-                                        name="username" 
+                                        name="username" // Alias for email ()
                                         value={input.username}
                                         type="text"
-                                        placeholder="Enter username"
+                                        placeholder="Enter email"
                                         className="form-control-lg"
                                     />
                                 </Form.Group>

@@ -51,6 +51,7 @@ public class AuthController {
     // for "URLEncoder"
     public ResponseEntity<Map<String, Object>> processPostLogin(@RequestBody Map<String, String> body,
             HttpServletResponse res) throws JsonProcessingException, UnsupportedEncodingException {
+        System.out.println(body.toString());
         String username = body.get("username");
         String password = body.get("password");
         Map<String, Object> bodyResponse = new HashMap<>();

@@ -40,8 +40,7 @@ public class User implements UserDetails {
 	@Column(name = "user_id")
 	private Integer userId;
 	
-	private String username;
-	private String email;
+	private String email;	// Use email as username
 	@JsonIgnore
 	private String password;
 	private String firstName;
@@ -55,7 +54,7 @@ public class User implements UserDetails {
     @Column(name = "modified_at")
     private Date modifiedAt;
     
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles",
     joinColumns = @JoinColumn(name="user_id"),
     inverseJoinColumns = @JoinColumn(name="role_id"))
@@ -78,7 +77,7 @@ public class User implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		return username;
+		return email;
 	}
 
 	@Override
@@ -102,10 +101,9 @@ public class User implements UserDetails {
 	}
 	
 
-	public User(String username, String email, String password, String firstName, String lastName, Date createdAt, Date modifiedAt,
+	public User(String email, String password, String firstName, String lastName, Date createdAt, Date modifiedAt,
 			Set<Role> authorities) {
 		super();
-		this.username = username;
 		this.email = email;
 		this.password = password;
 		this.firstName = firstName;

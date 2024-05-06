@@ -6,31 +6,21 @@ import UserPagination from "./common/UserPagination"
 import { useAuth } from "../../hooks/AuthProvider"
 import axios from "axios"
 
+import useApi from "../../hooks/Api"
+
 const API_URL = process.env.REACT_APP_BASE_URL + '/api'
 console.log(API_URL)
 
 
 const AdminTeacher = () => {
-    const auth = useAuth();
-    const token = auth.token;
-    const pageRefs = useRef<HTMLButtonElement[]>([]);
-    const [searchParams, setSearchParams] = useSearchParams()
-    const [data, setData] = useState<any[]>([]);
-    const pageInit = parseInt(searchParams.get('page') || '1'); // !null or '1'
-    const [page, setPage] = useState<number>(pageInit);
+    const api = useApi();
     const [totalPage, setTotalPage] = useState<number>(0); // Total number of teachers
     const size = 5;
-    // Fetch number of users
+    // Fetch number of users /numberOfTeachers
     useEffect(() => {
         async function fetchData() {
             try {
-                const response = await axios(API_URL + "/numberOfTeachers", {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                    withCredentials: true
-                });
+                const response = await api.get('api/numberOfTeachers');
                 const data: any = await response.data; // Assuming API returns the total number directly
                 const totalPage = Math.ceil(data / size);
                 setTotalPage(totalPage);
@@ -42,7 +32,9 @@ const AdminTeacher = () => {
 
         fetchData();
     }, []); 
-   return (<UserPagination totalPage={totalPage} usersByPageApi={API_URL + '/teachers'}/>)
+    // "/admin/student"
+    // Test
+   return (<UserPagination totalPage={totalPage} usersByPageApi={'/api/teachers'}/>)
 }
 
 export default AdminTeacher

@@ -3,122 +3,10 @@ import { faPen, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSearchParams } from "react-router-dom";
 import UserTable from "./UserTable";
-import { Button, Form, Modal } from "react-bootstrap";
-import { ValidateNameOfUser, ValidateEmail } from "../../../utils/Validate";
-import { useAuth } from "../../../hooks/AuthProvider";
-import axios from "axios";
+import useApi from "../../../hooks/Api";
+import CreateUserModal from "../../modal/CreateUserModal";
 
 
-
-interface ModalProps {
-    show: boolean;
-    onClose: () => void;
-}
-
-const CreateModal = (props: ModalProps) => {
-    const { show, onClose } = props;
-    const [showCreateModal, setShowCreateModal] = useState<boolean>(show)
-    const [input, setInput] = useState({
-        firstName: '',
-        lastName: '',
-        email: ''
-    })
-    const [isValidForm, setIsValidForm] = useState<boolean>(false)
-    const [inputValid, setInputValid] = useState({
-        firstName: false,
-        lastName: false,
-        email: false,
-    })
-
-    useEffect(() => setShowCreateModal(show)
-        , [show])
-    // console.log(showCreateModal)
-    useEffect(() => {
-        let isValid: boolean = Object.values(inputValid).every(input => input == true);
-        setIsValidForm(isValid)
-    }, [inputValid])
-    const handleInput = (event: any) => {
-        const name = event.target.name;
-        const value = event.target.value;
-        if (name == 'firstName' || name == 'lastName') {
-            setInputValid(prevInputValid => ({
-                ...prevInputValid,
-                [name]: ValidateNameOfUser(value) // 
-            }))
-
-        }
-        if (name == 'email') {
-            setInputValid(prevInputValid => ({
-                ...prevInputValid,
-                [name]: ValidateEmail(value) // 
-            }))
-        }
-        setInput(prevInput => ({
-            ...prevInput,
-            [name]: value
-        }))
-    }
-
-    const handleCloseCreateModal = () => {
-        setShowCreateModal(false);
-        setInputValid({
-            firstName: false,
-            lastName: false,
-            email: false,
-        })
-        setInput({
-            firstName: '',
-            lastName: '',
-            email: ''
-        })
-        onClose(); // Inform the parent about the closure, it will trigger "showCreateModal" in "UserPagination" component
-    }
-
-    const handleSubmitButton = (event: any) => {
-        event.preventDefault();
-        console.log(input)
-    }
-
-
-    return (
-        <>
-            <Modal show={showCreateModal} onHide={handleCloseCreateModal} >
-                <Modal.Header closeButton>
-                    <Modal.Title>Create user</Modal.Title>
-                </Modal.Header>
-                <Form>
-                    <Modal.Body>
-
-                        <Form.Group className="mb-3" controlId="formBasicEmail">
-                            <Form.Label>First Name</Form.Label>
-                            <Form.Control name="firstName" type="text" onChange={handleInput} placeholder="First" required />
-                        </Form.Group>
-                        {!inputValid.firstName && (<p className="text-secondary">The fist name must only contain letters and the first letter must be capitalized!</p>)}
-                        <Form.Group className="mb-3" controlId="formBasicEmail">
-                            <Form.Label>Last Name</Form.Label>
-                            <Form.Control name="lastName" type="text" onChange={handleInput} placeholder="Last" required />
-                        </Form.Group>
-                        {!inputValid.lastName && (<p className="text-secondary">The last name must only contain letters and the first letter must be capitalized!</p>)}
-                        <Form.Group className="mb-3" controlId="formBasicEmail">
-                            <Form.Label>Email</Form.Label>
-                            <Form.Control name="email" type="email" onChange={handleInput} placeholder="example@gmail.com" required />
-                        </Form.Group>
-                        {!inputValid.email && (<p className="text-secondary">Example: "example@gmail.com", "user123@sub.domain.com" </p>)}
-
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleCloseCreateModal}>
-                            Close
-                        </Button>
-                        <Button variant="primary" onClick={handleSubmitButton} disabled={!isValidForm}>
-                            Save Changes
-                        </Button>
-                    </Modal.Footer>
-                </Form>
-            </Modal>
-        </>
-    );
-}
 
 
 
@@ -127,9 +15,7 @@ interface UserPaginationProps {
     usersByPageApi: string
 }
 const UserPagination = (props: UserPaginationProps) => {
-    const auth = useAuth();
-    const token = auth.token;
-
+    const api = useApi();   // Create useApi() hook to include 'Authorization'
     const { totalPage, usersByPageApi } = props
     const pageRefs = useRef<HTMLButtonElement[]>([]);
     const [searchParams, setSearchParams] = useSearchParams()
@@ -147,25 +33,20 @@ const UserPagination = (props: UserPaginationProps) => {
         handleSearchParamChange();
     }, [searchParams]);
 
-    // Fetch users by page
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                    const response = await axios(usersByPageApi + `?page=${page}`, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization' : `Bearer ${token}`,
-                        },
-                        withCredentials: true
-                    });
-                const data = await response.data;
-                setData(data)
-            } catch(err) {
-                throw err
-            }
-           
-            // console.log(data)
+    async function fetchData() {
+        try {
+            const response = await api.get(usersByPageApi + `?page=${page}`)
+            const data = await response.data;
+            setData(data)
+        } catch(err) {
+            throw err
         }
+       
+        // console.log(data)
+    }
+    // Fetch users by page usersByPageApi + `?page=${page}`
+    useEffect(() => {
+        
         fetchData()
     }, [page])
 
@@ -185,10 +66,11 @@ const UserPagination = (props: UserPaginationProps) => {
         setSearchParams({ 'page': nextPage.toString() });
     }
 
+
     // For modal
-    const [showCreateModal, setShowCreateModal] = useState<boolean>(false)
+    const [showCreateUserModal, setShowCreateUserModal] = useState<boolean>(false)
     return <>
-        <button type="button" title="Create" onClick={() => setShowCreateModal(true)} className="me-1 btn btn-outline-primary">
+        <button type="button" title="Create" onClick={() => setShowCreateUserModal(true)} className="me-1 btn btn-outline-primary">
             <FontAwesomeIcon icon={faPlus} />
         </button>
         <UserTable users={data} size={size} page={page} />
@@ -206,7 +88,7 @@ const UserPagination = (props: UserPaginationProps) => {
                 <li className="page-item"><button className="page-link" onClick={handleNextPage}>Next</button></li>
             </ul>
         </nav>
-        <CreateModal show={showCreateModal} onClose={() => setShowCreateModal(false)} />
+        <CreateUserModal show={showCreateUserModal} onClose={() => setShowCreateUserModal(false)} />
     </>
 }
 

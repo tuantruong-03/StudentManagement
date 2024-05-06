@@ -1,30 +1,31 @@
 import { useEffect, useRef, useState } from "react"
-import { Table } from 'react-bootstrap'
-import TableUser from "./common/UserTable"
-import {useSearchParams} from 'react-router-dom'
 import UserPagination from "./common/UserPagination"
+import useApi from "../../hooks/Api"
 
-const API_URL = process.env.REACT_APP_BASE_URL + '/api'
-console.log(API_URL)
+
 
 
 const AdminStudent = () => {
+    const api = useApi();
     const [totalPage, setTotalPage] = useState<number>(0); // Total number of teachers
     const size = 5;
     // Fetch number of users
     useEffect(() => {
         async function fetchData() {
-            const response = await fetch(API_URL + `/numberOfStudents`);
-            const data = await response.json(); // Total number of teachers
-            return data;
+            try {
+                const response = await api.get('api/numberOfTeachers');
+                const data: any = await response.data; // Assuming API returns the total number directly
+                const totalPage = Math.ceil(data / size);
+                setTotalPage(totalPage);
+            } catch (err) {
+                console.error('Error fetching data:', err);
+                // Optionally handle the error by updating the component state
+            }
         }
-        fetchData().then(data => {
-            const totalPage = Math.ceil(data / size);
-            setTotalPage(totalPage)
 
-        })
-    }, [])
-   return (<UserPagination totalPage={totalPage} usersByPageApi={API_URL + '/students'}/>)
+        fetchData();
+    }, []); 
+   return (<UserPagination totalPage={totalPage} usersByPageApi={'api/students'}/>)
 }
 
 export default AdminStudent

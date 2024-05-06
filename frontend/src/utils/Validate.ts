@@ -4,7 +4,7 @@ export const ValidateNameOfUser = (name: string): boolean => { // For firstName 
 }   
 
 export const ValidateEmail = (email: string): boolean => { // For firstName and lastName
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+(?<!\.)$/;
     return regex.test(email);
 }   
 

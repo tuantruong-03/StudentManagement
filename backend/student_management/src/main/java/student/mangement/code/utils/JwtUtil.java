@@ -74,7 +74,7 @@ public class JwtUtil  {
 		try {
 			// Verify with jwtSecretBytes key
 			Jwts.parser().setSigningKey(jwtSecretBytes).parseClaimsJws(token);
-			return true && isTokenExpired(token);
+			return !isTokenExpired(token);
 		} catch (SignatureException e) {
 			System.err.println("Invalid JWT signature: {} " + e.getMessage());
 		} catch (MalformedJwtException e) {

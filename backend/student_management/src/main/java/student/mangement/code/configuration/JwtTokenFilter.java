@@ -45,13 +45,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             String token = resolveToken(request);
             // System.out.println("token " + token);
             if (token !=null && jwtUtil.validateToken(token)) {
+                System.out.println("Valid token in JwtTokenFilter");
                 String username = jwtUtil.getUsernameFromToken(token);
                 User  user = (User)userService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     user, null, user.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                
             }  else {
                 SecurityContextHolder.clearContext(); // Ensure no authentication in security context holder
                 if (token == null) {
@@ -73,11 +73,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     // Extract "Bearer $token" fron "Authorization" header
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("authorization");
-        for (Enumeration<String> e = request.getHeaderNames(); e.hasMoreElements();) {
-            String nextHeader = e.nextElement();
-            String value = request.getHeader(nextHeader);
-            System.out.println(nextHeader + " " + value);
-        }
+        // for (Enumeration<String> e = request.getHeaderNames(); e.hasMoreElements();) {
+        //     String nextHeader = e.nextElement();
+        //     String value = request.getHeader(nextHeader);
+        //     System.out.println(nextHeader + " " + value);
+        // }
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7); // Remove "Bearer " to get the token
         }
@@ -87,6 +87,4 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private boolean shouldNotFilter(String path) {
         return EXCLUDE_URL_PATTERNS.stream().anyMatch(url -> url.equals(path));
     }
-
-
 }

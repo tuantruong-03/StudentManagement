@@ -15,7 +15,7 @@ import student.mangement.code.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-	Optional<User> findByUsername(String username);
+	Optional<User> findByEmail(String email);
 
 	@Query("SELECT COUNT(u) FROM User u JOIN u.authorities a WHERE a.authority = :authority")
     long countByAuthority(@Param("authority") String authority);

@@ -7,4 +7,5 @@ import student.mangement.code.model.Role;
 
 
 public interface RoleService {
+    Role findRoleByAuthority(String authority);
 }

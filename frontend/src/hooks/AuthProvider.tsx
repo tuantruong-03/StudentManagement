@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect, ReactNode, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCookies } from 'react-cookie';
 import Cookies from 'js-cookie';
+import axios from 'axios';
 
 const hours = 3;
 const expiryDate = new Date();
@@ -47,18 +47,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Define login function
     const login = async (input: object): Promise<any> => {
         try {
-            const response = await fetch(LOGIN_POST, {
+            const response = await axios(LOGIN_POST, {
                 method: 'POST',
-                credentials: "include", // This is critical for cookies to be sent and received
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                withCredentials: true, // This is critical for cookies to be sent and received
                 
-                body: JSON.stringify(input)
+                data: input
             });
-            const data = await response.json();
             // After fetch backend server, server response with Set-Cookie header (include token and user)
-            if (response.ok) {
+            if (response.status == 200) { // OK
                 setAuthState(prev => {
                     const userJson = Cookies.get('user');
                     console.log("userJson", userJson)
@@ -87,6 +83,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             }
         } catch (err) {
             console.error("Login Error: ", err);
+            return "Invalid username or password";
         }
     };
 

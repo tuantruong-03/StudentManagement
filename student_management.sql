@@ -5,7 +5,6 @@ use student_management;
 
 CREATE TABLE users (
     user_id INT AUTO_INCREMENT,
-    username VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     email varchar(255) not null,
 	first_name varchar(255),
@@ -26,8 +25,8 @@ CREATE TABLE courses (
 );
 
 -- QUERY IF NECCESSARY
--- SELECT count(*) FROM users u join users_roles ur join roles r on u.user_id = ur.user_id and ur.role_id = r.role_id
--- where  r.authority = 'ROLE_STUDENT' ;
+SELECT * FROM users u join users_roles ur join roles r on u.user_id = ur.user_id and ur.role_id = r.role_id
+where  r.authority = 'ROLE_TEACHER' ;
 
 
     

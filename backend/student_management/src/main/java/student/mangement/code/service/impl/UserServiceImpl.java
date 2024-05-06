@@ -26,8 +26,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Optional<User> user = userRepository.findByUsername(username);
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException { // username is equivalent to email
+		Optional<User> user = userRepository.findByEmail(username);
 		if (user.isEmpty()) {
 			return null;
 		}
@@ -43,6 +43,20 @@ public class UserServiceImpl implements UserService {
 	public List<User> findUsersByAuthorityAndPagination(String authority, int page, int size) {
 		Pageable pageable = PageRequest.of(page,size);
 		return userRepository.findUsersByAuthorityAndPagination(authority, pageable);
+	}
+
+	@Override
+	public User saveUser(User user) {
+		return userRepository.save(user);
+	}
+
+	@Override
+	public User findUserByEmail(String email) {
+		Optional<User> user = userRepository.findByEmail(email);
+		if (user.isEmpty()) {
+			return null;
+		}
+		return user.get(); 
 	}
 
 }
