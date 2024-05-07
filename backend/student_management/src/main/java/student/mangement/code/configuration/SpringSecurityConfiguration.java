@@ -25,7 +25,9 @@ public class SpringSecurityConfiguration {
 	
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		return http.csrf(csrf -> csrf.disable())
+		return http
+				.csrf(csrf -> csrf.disable())
+				// .cors(cors -> cors.disable())
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))	
 				.authorizeHttpRequests(auth ->{
 					auth.requestMatchers("/auth/login").permitAll();
@@ -35,6 +37,4 @@ public class SpringSecurityConfiguration {
 				.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
 				.build();
 	}
-	
-	
 }

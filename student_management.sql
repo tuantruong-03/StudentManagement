@@ -25,8 +25,8 @@ CREATE TABLE courses (
 );
 
 -- QUERY IF NECCESSARY
-SELECT * FROM users u join users_roles ur join roles r on u.user_id = ur.user_id and ur.role_id = r.role_id
-where  r.authority = 'ROLE_TEACHER' ;
+-- SELECT * FROM users u join users_roles ur join roles r on u.user_id = ur.user_id and ur.role_id = r.role_id
+-- where  r.authority = 'ROLE_TEACHER' ;
 
 
     

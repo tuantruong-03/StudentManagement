@@ -141,7 +141,7 @@ public class StudentManagementApplication {
 			insertUser(new User("tomriddle@example.com", passwordEncoder.encode("123"), "Tom", "Riddle", new Date(), null, null), "ROLE_TEACHER", roleRepository, userRepository);
 	        if (students.size() > 0) {
 	        	String[] courseNames = {"Introduction to Python", "Advanced Java", "Web Development", "Algorithms and Data Structures", "Database Systems"}; 
-	        	Integer[] maxNumberOfStudents = {30, 25, 40, 35, 30};
+	        	Integer[] maxNumberOfStudents = {50, 60, 75, 65, 80};
 	        	for (int i = 0; i < courseNames.length; ++i) {
 	        		List<User> courseUsers = new ArrayList<>();
 	        		Collections.shuffle(teachers);

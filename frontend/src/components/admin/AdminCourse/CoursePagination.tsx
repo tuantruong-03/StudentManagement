@@ -11,14 +11,14 @@ import DeleteUserModal from "../../modal/DeleteUserModal";
 
 
 
-interface UserTableProps {
-  users: any[],
+interface CourseTableProps {
+  courses: any[],
   page: number,
   size: number
 }
 
-const UserTable = (props: UserTableProps) => {
-  const { users, page, size } = props;
+const CourseTable = (props: CourseTableProps) => {
+  const { courses, page, size } = props;
 
   // For modal
   const [showDeleteUserModal, setShowDeleteUserModal] = useState<boolean>(false)
@@ -35,22 +35,22 @@ const UserTable = (props: UserTableProps) => {
         <thead className='thead'>
           <tr style={{ backgroundColor: 'lightblue' }}>
             <th scope="col" style={{ width: '10%' }}>#</th>
-            <th scope="col" style={{ width: '30%' }}>First</th>
-            <th scope="col" style={{ width: '30%' }}>Last</th>
-            <th scope="col" style={{ width: '30%' }}>Email</th>
+            <th scope="col" style={{ width: '30%' }}>Name</th>
+            <th scope="col" style={{ width: '30%' }}>Current number</th>
+            <th scope="col" style={{ width: '30%' }}>Max number</th>
             <th scope="col" style={{ width: '30%' }}>Handle</th>
           </tr>
         </thead>
         <tbody>
-          {users.map((user, index) => (
+          {courses.map((course, index) => (
             <tr key={index}>
               <th scope="row">{index + 1 + (page - 1) * size}</th>
-              <td>{user.firstName}</td>
-              <td>{user.lastName}</td>
-              <td>{user.email}</td>
+              <td>{course.name}</td>
+              <td>{course.currentNumberOfStudent}</td>
+              <td>{course.maxNumberOfStudent}</td>
               <td>
                 <button type="button" className="me-1 btn btn-outline-primary" title="Update"><FontAwesomeIcon icon={faPen} /></button>
-                <button type="button" onClick={() => handleDeleteButton(user)} className="btn btn-outline-primary" title="Delete"><FontAwesomeIcon icon={faTrash} /></button>
+                <button type="button" onClick={() => handleDeleteButton(course)} className="btn btn-outline-primary" title="Delete"><FontAwesomeIcon icon={faTrash} /></button>
               </td>
             </tr>
           ))}
@@ -63,13 +63,13 @@ const UserTable = (props: UserTableProps) => {
 
 
 
-interface UserPaginationProps {
+interface CoursePaginationProps {
   totalPage: number,
-  usersByPageApi: string
+  courseByPageApi: string
 }
-const UserPagination = (props: UserPaginationProps) => {
+const CoursePagination = (props: CoursePaginationProps) => {
   const api = useApi();   // Create useApi() hook to include 'Authorization'
-  const { totalPage, usersByPageApi } = props
+  const { totalPage, courseByPageApi } = props
   const pageRefs = useRef<HTMLButtonElement[]>([]);
   const [searchParams, setSearchParams] = useSearchParams()
   const [data, setData] = useState<any[]>([]);
@@ -88,8 +88,9 @@ const UserPagination = (props: UserPaginationProps) => {
 
   async function fetchData() {
     try {
-      const response = await api.get(usersByPageApi + `?page=${page}`)
+      const response = await api.get(courseByPageApi + `?page=${page}`)
       const data = await response.data;
+      console.log(data)
       setData(data)
     } catch (err) {
       throw err
@@ -97,7 +98,7 @@ const UserPagination = (props: UserPaginationProps) => {
 
     // console.log(data)
   }
-  // Fetch users by page usersByPageApi + `?page=${page}`
+  // Fetch users by page courseByPageApi + `?page=${page}`
   useEffect(() => {
 
     fetchData()
@@ -123,10 +124,10 @@ const UserPagination = (props: UserPaginationProps) => {
   // For modal
   const [showCreateUserModal, setShowCreateUserModal] = useState<boolean>(false)
   return <>
-    <button type="button" title="Create" onClick={() => setShowCreateUserModal(true)} className="me-1 my-2 btn btn-outline-primary">
+    <button type="button" title="Create" onClick={() => setShowCreateUserModal(true)} className="me-1 btn btn-outline-primary">
       <FontAwesomeIcon icon={faPlus} />
     </button>
-    <UserTable users={data} size={size} page={page} />
+    <CourseTable courses={data} size={size} page={page} />
     {totalPage != 1 && (  // Show pagination when totalPage > 1
       <nav aria-label="Page navigation example">
         <ul className="pagination justify-content-center">
@@ -147,4 +148,4 @@ const UserPagination = (props: UserPaginationProps) => {
   </>
 }
 
-export default UserPagination;
+export default CoursePagination;

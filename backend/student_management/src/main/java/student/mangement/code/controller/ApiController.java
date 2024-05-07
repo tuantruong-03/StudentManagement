@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.jsonwebtoken.Claims;
+import student.mangement.code.dto.CourseDTO;
 import student.mangement.code.dto.UserDTO;
+import student.mangement.code.model.Course;
 import student.mangement.code.model.Role;
 import student.mangement.code.model.User;
 import student.mangement.code.repository.UserRepository;
@@ -26,7 +28,7 @@ import student.mangement.code.utils.JwtUtil;
 
 
 @Controller
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class ApiController {
 	private String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lIiwiZXhwIjoxNzEzOTgxODkwLCJpYXQiOjE3MTM5NjM4OTB9.aAELEE5oWAMUOPnLQwC19QtaLW1gvt4qFH4ZuaqnfeEuJm4tOamgVIS1_GvbRE1GOnlB5eNC16sPHHb3RMq4hA";
 	@Autowired
@@ -98,6 +100,31 @@ public class ApiController {
 		return new ResponseEntity<>(userDTOs,HttpStatus.OK);
 	}
 	// Course API
+	@GetMapping("/allCourses")
+	@ResponseBody
+	ResponseEntity<List<Course>> getCourses() {
+		List<Course> courseList = courseService.findAllCourses();
+		return new ResponseEntity<>(courseList, HttpStatus.OK);
+	}
+
+	@GetMapping("/numberOfCourses")
+	@ResponseBody
+	ResponseEntity<Long> countCourses() {
+		Long count = courseService.countCourse();
+		return new ResponseEntity<>(count,HttpStatus.OK);
+	}
+
+	@GetMapping("/courses")
+	@ResponseBody
+	ResponseEntity<List<CourseDTO>> getCoursesByPage(@RequestParam Map<String, String> param) {
+		// "page" counted from 1, but in SQL it is counted from 0
+
+		int size = 5; // Set default
+		String page_raw = (String)param.get("page");
+		int page = page_raw == null ? 0 : Integer.parseInt(page_raw) - 1;
+		List<CourseDTO> courseList = courseService.findCoursesByPage(page, size);
+		return new ResponseEntity<>(courseList,HttpStatus.OK);
+	}
 
 	
 	@GetMapping("/token")

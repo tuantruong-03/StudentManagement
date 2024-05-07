@@ -1,12 +1,7 @@
 import { useEffect, useRef, useState } from "react"
-import { Table } from 'react-bootstrap'
-import TableUser from "./common/UserTable"
-import {useSearchParams} from 'react-router-dom'
-import UserPagination from "./common/UserPagination"
-import { useAuth } from "../../hooks/AuthProvider"
-import axios from "axios"
+import UserPagination from "../common/UserPagination"
 
-import useApi from "../../hooks/Api"
+import useApi from "../../../hooks/Api"
 
 const API_URL = process.env.REACT_APP_BASE_URL + '/api'
 console.log(API_URL)
@@ -20,7 +15,7 @@ const AdminTeacher = () => {
     useEffect(() => {
         async function fetchData() {
             try {
-                const response = await api.get('api/numberOfTeachers');
+                const response = await api.get('api/v1/numberOfTeachers');
                 const data: any = await response.data; // Assuming API returns the total number directly
                 const totalPage = Math.ceil(data / size);
                 setTotalPage(totalPage);
@@ -34,7 +29,7 @@ const AdminTeacher = () => {
     }, []); 
     // "/admin/student"
     // Test
-   return (<UserPagination totalPage={totalPage} usersByPageApi={'/api/teachers'}/>)
+   return (<UserPagination totalPage={totalPage} usersByPageApi={'/api/v1/teachers'}/>)
 }
 
 export default AdminTeacher

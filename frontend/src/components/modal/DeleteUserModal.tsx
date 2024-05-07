@@ -34,8 +34,11 @@ const DeleteUserModal = (props: DeleteUserModal) => {
 
         event.preventDefault();
         try {
-            const response = await api.delete("/admin/user", {
-                data: user.email
+            const response = await api.delete("/admin/v1/user", {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: {email: user.email}
             })
         } catch(err) {
             console.log('Errors: ', err);

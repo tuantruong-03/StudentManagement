@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react"
-import UserPagination from "./common/UserPagination"
-import useApi from "../../hooks/Api"
+import UserPagination from "../common/UserPagination"
+import useApi from "../../../hooks/Api"
+import CoursePagination from "./CoursePagination";
 
 
 
@@ -13,7 +14,7 @@ const AdminStudent = () => {
     useEffect(() => {
         async function fetchData() {
             try {
-                const response = await api.get('api/numberOfTeachers');
+                const response = await api.get('api/v1/numberOfCourses');
                 const data: any = await response.data; // Assuming API returns the total number directly
                 const totalPage = Math.ceil(data / size);
                 setTotalPage(totalPage);
@@ -25,7 +26,7 @@ const AdminStudent = () => {
 
         fetchData();
     }, []); 
-   return (<UserPagination totalPage={totalPage} usersByPageApi={'api/students'}/>)
+   return (<CoursePagination totalPage={totalPage} courseByPageApi={'api/v1/courses'}/>)
 }
 
 export default AdminStudent

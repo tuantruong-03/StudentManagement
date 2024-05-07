@@ -14,7 +14,8 @@ import student.mangement.code.model.Course;
 
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Integer> {
-	Optional<Course>findByName(String name);
+	Optional<Course> findByName(String name);
+	Optional<Course> findByCourseId(int courseId);
 	@Query("SELECT c FROM Course c")
 	List<Course> findByPage(Pageable pageable);
 	@Query("SELECT COUNT(c) FROM Course c")
