@@ -1,5 +1,6 @@
 package student.mangement.code.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,12 +52,32 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	// user.isEmtpy() ? null : user.get()
 	public User findUserByEmail(String email) {
 		Optional<User> user = userRepository.findByEmail(email);
 		if (user.isEmpty()) {
 			return null;
 		}
 		return user.get(); 
+	}
+
+	@Override
+	public void deletUser(User user) {
+		userRepository.delete(user);
+	}
+
+	@Override
+	public User updateUser(User user) {
+		Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
+		if (existingUser.isEmpty()) {
+			return null;
+		}
+		User updatedUser = existingUser.get();
+		updatedUser.setFirstName(user.getFirstName());
+		updatedUser.setLastName(user.getLastName());
+		updatedUser.setModifiedAt(new Date());
+		userRepository.save(updatedUser);
+		return updatedUser;
 	}
 
 }

@@ -5,38 +5,41 @@ import { Button, Form, Modal } from "react-bootstrap";
 import { useLocation } from "react-router";
 import { toast } from "react-toastify";
 
-interface CreateUserModalProps {
+interface UpdateUserModalProps {
+    user: any;
     show: boolean;
     onClose: () => void;
 }
 
-const identifyRole = (path: string): string => {
-    if (path.includes('teacher')){
-         return "ROLE_TEACHER";
-        }
-    if (path.includes('student')) {
-        return "ROLE_STUDENT";
-    }
-    return "unknown";
-}
 
-const CreateUserModal = (props: CreateUserModalProps) => {
+const UpdateUserModal = (props: UpdateUserModalProps) => {
     const api = useApi();
     const location = useLocation();
-    const role = identifyRole(location.pathname);   // To identify if we create teacher or student
-    const { show, onClose } = props;
+    const { show, onClose, user } = props;  // First render, "user" is null
     const [showModal, setShowModal] = useState<boolean>(show)
     const [input, setInput] = useState({
-        role: role,
-        firstName: '',
-        lastName: '',
-        email: ''
+        firstName: "",
+        lastName: "",
+        email: "",
     })
+
+    useEffect(() => {
+        setInput({
+            firstName: user?.firstName,
+            lastName: user?.lastName,
+            email: user?.email,
+
+        })
+        console.log(user)
+
+    }, [user])
+
+
     const [isValidForm, setIsValidForm] = useState<boolean>(false)
     const [inputValid, setInputValid] = useState({
-        firstName: false,
-        lastName: false,
-        email: false,
+        firstName: true,
+        lastName: true,
+        email: true,
     })
 
     useEffect(() => setShowModal(show)
@@ -71,15 +74,15 @@ const CreateUserModal = (props: CreateUserModalProps) => {
     const handleCloseModal = () => {
         setShowModal(false);
         setInputValid({
-            firstName: false,
-            lastName: false,
-            email: false,
+            firstName: true,
+            lastName: true,
+            email: true,
         })
         setInput({
-            role: role,
-            firstName: '',
-            lastName: '',
-            email: ''
+            firstName: user?.firstName,
+            lastName: user?.lastName,
+            email: user?.email,
+
         })
         onClose(); // Inform the parent about the closure, it will trigger "showModal" in "UserPagination" component
     }
@@ -88,15 +91,14 @@ const CreateUserModal = (props: CreateUserModalProps) => {
         event.preventDefault();
         console.log(input)
         try {
-            const response = await api.post(`/admin/user`, input);
-            if (response.status == 201) { // HttpStatus.CREATED
+            const response = await api.post(`/admin/user/put`, input);
+            if (response.status == 200) { // HttpStatus.OK
                 window.location.reload();
-            } 
+            }
 
-        } catch(err) {  // Email must be unique
+        } catch (err) {  // Email must be unique
             console.log(err)
-            toast.error("Email is used by another user"); // Notify the user of the error
-            alert("Email is used by another user")
+            alert("Invalid user")
         }
     }
 
@@ -109,22 +111,22 @@ const CreateUserModal = (props: CreateUserModalProps) => {
                 </Modal.Header>
                 <Form>
                     <Modal.Body>
-                        
+
                         <Form.Group className="mb-3" controlId="formBasicEmail">
                             <Form.Label>First Name</Form.Label>
-                            <Form.Control name="firstName" type="text" onChange={handleInput} placeholder="First" required />
+                            <Form.Control name="firstName" type="text" value={input.firstName} onChange={handleInput} placeholder="First" required />
                         </Form.Group>
                         {!inputValid.firstName && (<p className="text-secondary">The fist name must only contain letters and the first letter must be capitalized!</p>)}
                         <Form.Group className="mb-3" controlId="formBasicEmail">
                             <Form.Label>Last Name</Form.Label>
-                            <Form.Control name="lastName" type="text" onChange={handleInput} placeholder="Last" required />
+                            <Form.Control name="lastName" type="text" value={input.lastName} onChange={handleInput} placeholder="Last" required />
                         </Form.Group>
                         {!inputValid.lastName && (<p className="text-secondary">The last name must only contain letters and the first letter must be capitalized!</p>)}
                         <Form.Group className="mb-3" controlId="formBasicEmail">
                             <Form.Label>Email</Form.Label>
-                            <Form.Control name="email" type="email" onChange={handleInput} placeholder='username@example.com' required />
+                            <Form.Control name="email" type="email" readOnly={true} value={input.email} onChange={handleInput} placeholder='username@example.com' required />
                         </Form.Group>
-                        {!inputValid.email && (<p className="text-secondary">Example: "user@example.com", "user123@sub.domain.com".</p>)}
+                        {/* {!inputValid.email && (<p className="text-secondary">Example: "user@example.com", "user123@sub.domain.com".</p>)} */}
 
                     </Modal.Body>
                     <Modal.Footer>
@@ -141,4 +143,4 @@ const CreateUserModal = (props: CreateUserModalProps) => {
     );
 }
 
-export default CreateUserModal
+export default UpdateUserModal

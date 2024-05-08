@@ -7,7 +7,7 @@ const Header = () => {
     const auth = useAuth();
 
     return (
-        <nav className="navbar navbar-expand-lg px-0 navbar-grey bg-grey">
+        <nav className="app-bg-primary px-1 navbar navbar-expand-lg">
             <a className="navbar-brand" href="#">Admin</a>
             <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span className="navbar-toggler-icon"></span>

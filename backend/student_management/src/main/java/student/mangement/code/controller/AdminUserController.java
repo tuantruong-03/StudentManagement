@@ -1,6 +1,7 @@
 package student.mangement.code.controller;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -26,8 +27,8 @@ import student.mangement.code.service.UserService;
 
 @Controller
 @ResponseBody
-@RequestMapping("/admin")
-public class AdminController {
+@RequestMapping("/admin/user")
+public class AdminUserController {
     @Autowired
     PasswordEncoder passwordEncoder;
 
@@ -37,10 +38,8 @@ public class AdminController {
     @Autowired
     UserService userService;
 
-
-    @PostMapping("/user")
+    @PostMapping("")
     ResponseEntity<User> processPostUser(@RequestBody Map<String, Object> body) {
-        System.out.println(body.toString());
         String roleString = (String)body.get("role");
         String firstName = (String)body.get("firstName");
         String lastName = (String)body.get("lastName");
@@ -56,11 +55,29 @@ public class AdminController {
         User savedUser = userService.saveUser(user);
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
-
-    @DeleteMapping("/user")
-    ResponseEntity<User> processDeleteUser(@RequestParam Map<String, Object> body) {
-        System.out.println(body.toString());
-        System.out.println("delete");
-        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    @PostMapping("/delete")
+    ResponseEntity<?> processDeleteUser(@RequestBody Map<String,Object> body) {
+        Map <String, String> response = new HashMap<>();
+        String email = (String)body.get("email");
+        User existingUser = userService.findUserByEmail(email);
+        if (existingUser!= null){
+            userService.deletUser(existingUser);
+            response.put("message", "Success");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        response.put("message", "Failed");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+    @PostMapping("/put")
+    ResponseEntity <User> processPutUser(@RequestBody Map<String, Object> body) {
+        String firstName = (String)body.get("firstName");
+        String lastName = (String)body.get("lastName");
+        String email = (String)body.get("email");
+        User user = new User(email,"",firstName,lastName,null,null,null);   // Temporary user
+        User updatedUser = userService.updateUser(user);
+        if (updatedUser == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    }   
 }

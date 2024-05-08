@@ -2,26 +2,19 @@ package student.mangement.code.controller;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.jsonwebtoken.Claims;
-import student.mangement.code.dto.CourseDTO;
 import student.mangement.code.dto.UserDTO;
-import student.mangement.code.model.Course;
-import student.mangement.code.model.Role;
 import student.mangement.code.model.User;
-import student.mangement.code.repository.UserRepository;
 import student.mangement.code.service.CourseService;
 import student.mangement.code.service.UserService;
 import student.mangement.code.utils.JwtUtil;
@@ -29,7 +22,7 @@ import student.mangement.code.utils.JwtUtil;
 
 @Controller
 @RequestMapping("/api/v1")
-public class ApiController {
+public class ApiUserController {
 	private String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqb2huZG9lIiwiZXhwIjoxNzEzOTgxODkwLCJpYXQiOjE3MTM5NjM4OTB9.aAELEE5oWAMUOPnLQwC19QtaLW1gvt4qFH4ZuaqnfeEuJm4tOamgVIS1_GvbRE1GOnlB5eNC16sPHHb3RMq4hA";
 	@Autowired
 	CourseService courseService;
@@ -57,7 +50,7 @@ public class ApiController {
 	ResponseEntity<List<UserDTO>> getTeachersByPage(@RequestParam Map<String, String> param) {
 		// "page" counted from 1, but in SQL it is counted from 0
 
-		int size = 5; // Set default
+		int size = 10; // Set default
 		String page_raw = (String)param.get("page");
 		int page = page_raw == null ? 0 : Integer.parseInt(page_raw) - 1;
 		List<User> userList = userService.findUsersByAuthorityAndPagination("ROLE_TEACHER", page, size);
@@ -90,7 +83,7 @@ public class ApiController {
 	ResponseEntity<List<UserDTO>> getStudentsByPage(@RequestParam Map<String, String> param) {
 		// "page" counted from 1, but in SQL it is counted from 0
 
-		int size = 5; // Set default
+		int size = 10; // Set default
 		String page_raw = (String)param.get("page");
 		int page = page_raw == null ? 0 : Integer.parseInt(page_raw) - 1;
 		List<User> userList = userService.findUsersByAuthorityAndPagination("ROLE_STUDENT", page, size);
@@ -98,32 +91,6 @@ public class ApiController {
 			.map(user -> new UserDTO(user))
 			.toList();
 		return new ResponseEntity<>(userDTOs,HttpStatus.OK);
-	}
-	// Course API
-	@GetMapping("/allCourses")
-	@ResponseBody
-	ResponseEntity<List<Course>> getCourses() {
-		List<Course> courseList = courseService.findAllCourses();
-		return new ResponseEntity<>(courseList, HttpStatus.OK);
-	}
-
-	@GetMapping("/numberOfCourses")
-	@ResponseBody
-	ResponseEntity<Long> countCourses() {
-		Long count = courseService.countCourse();
-		return new ResponseEntity<>(count,HttpStatus.OK);
-	}
-
-	@GetMapping("/courses")
-	@ResponseBody
-	ResponseEntity<List<CourseDTO>> getCoursesByPage(@RequestParam Map<String, String> param) {
-		// "page" counted from 1, but in SQL it is counted from 0
-
-		int size = 5; // Set default
-		String page_raw = (String)param.get("page");
-		int page = page_raw == null ? 0 : Integer.parseInt(page_raw) - 1;
-		List<CourseDTO> courseList = courseService.findCoursesByPage(page, size);
-		return new ResponseEntity<>(courseList,HttpStatus.OK);
 	}
 
 	

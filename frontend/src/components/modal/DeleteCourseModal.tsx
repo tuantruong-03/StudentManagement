@@ -1,20 +1,18 @@
 import { useEffect, useState } from "react";
 import useApi from "../../hooks/Api";
 import { Button, Form, Modal } from "react-bootstrap";
-import { useLocation } from "react-router";
 
-interface DeleteUserModal {
+interface DeleteCourseModal {
     show: boolean;
     onClose: () => void;
-    user: any;
+    course: any;
 }
 
 
 
-const DeleteUserModal = (props: DeleteUserModal) => {
+const DeleteCourseModal = (props: DeleteCourseModal) => {
     const api = useApi();
-    const location = useLocation();
-    const { show, onClose, user } = props;
+    const { show, onClose, course } = props;
     const [showModal, setShowModal] = useState<boolean>(show)
 
 
@@ -26,18 +24,18 @@ const DeleteUserModal = (props: DeleteUserModal) => {
 
     const handleCloseModal = () => {
         setShowModal(false);
-        onClose(); // Inform the parent about the closure, it will trigger "showModal" in "UserPagination" component
+        onClose(); // Inform the parent about the closure, it will trigger "showModal" in "coursePagination" component
     }
 
     const handleSubmitButton = async (event: any) => {
-        console.log(user)
+        console.log(course)
         const payload = {
-            email: user.email
+            name: course.name
         }
 
         event.preventDefault();
         try {
-            const response = await api.post("/admin/user/delete", payload)
+            const response = await api.post("/admin/course/delete", payload)
             if (response.status == 200) {
                 window.location.reload();
             }
@@ -51,11 +49,11 @@ const DeleteUserModal = (props: DeleteUserModal) => {
         <>
             <Modal show={showModal} onHide={handleCloseModal} >
                 <Modal.Header closeButton>
-                    <Modal.Title>Delete user</Modal.Title>
+                    <Modal.Title>Delete course</Modal.Title>
                 </Modal.Header>
                 <Form>
                     <Modal.Body>
-                        Are you sure to delete this user?
+                        Are you sure to delete this course?
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={handleCloseModal}>
@@ -71,4 +69,4 @@ const DeleteUserModal = (props: DeleteUserModal) => {
     );
 }
 
-export default DeleteUserModal
+export default DeleteCourseModal

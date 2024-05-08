@@ -21,7 +21,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 
 @Component
 public class JwtUtil  {
-    public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
+    public static final long JWT_TOKEN_VALIDITY = 3 * 60 * 60;
 
 	// @Value("${jwt.jwtSecretBytes}")
 	private String jwtSecret = "mySecret";

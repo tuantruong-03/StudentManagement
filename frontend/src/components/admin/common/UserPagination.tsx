@@ -6,6 +6,8 @@ import useApi from "../../../hooks/Api";
 import CreateUserModal from "../../modal/CreateUserModal";
 import { Table } from "react-bootstrap";
 import DeleteUserModal from "../../modal/DeleteUserModal";
+import UpdateUserModal from "../../modal/UpdateUserModal";
+import { USERS_PER_PAGE } from "../../../constants/Constant";
 
 // This is for "AdminStudent", "AdminTeacher"
 
@@ -21,24 +23,31 @@ const UserTable = (props: UserTableProps) => {
   const { users, page, size } = props;
 
   // For modal
+  const [showUpdateUserModal, setShowUpdateUserModal] = useState<boolean>(false)
   const [showDeleteUserModal, setShowDeleteUserModal] = useState<boolean>(false)
   const [deleteUser, setDeleteUser] = useState(null);
+  const [updateUser, setUpdateUser] = useState(null);
 
   const handleDeleteButton = (user: any) => {
     setShowDeleteUserModal(true);
     setDeleteUser(user);
   }
 
+  const handleUpdateButton = (user: any) => {
+    setShowUpdateUserModal(true);
+    setUpdateUser(user);
+  }
+
   return (
-    <div style={{ overflowX: 'auto' }}>
+    <div style={{ overflowX: 'auto', textAlign: 'center' }}>
       <Table bordered style={{ minWidth: '800px', tableLayout: 'fixed' }}>
         <thead className='thead'>
-          <tr style={{ backgroundColor: 'lightblue' }}>
-            <th scope="col" style={{ width: '10%' }}>#</th>
-            <th scope="col" style={{ width: '30%' }}>First</th>
-            <th scope="col" style={{ width: '30%' }}>Last</th>
-            <th scope="col" style={{ width: '30%' }}>Email</th>
-            <th scope="col" style={{ width: '30%' }}>Handle</th>
+          <tr>
+            <th scope="col" className="table-header-bg text-white" style={{ width: '10%' }}>#</th>
+            <th scope="col" className="table-header-bg text-white" style={{ width: '30%' }}>First Name</th>
+            <th scope="col" className="table-header-bg text-white" style={{ width: '30%' }}>Last Name</th>
+            <th scope="col" className="table-header-bg text-white" style={{ width: '30%' }}>Email</th>
+            <th scope="col" className="table-header-bg text-white" style={{ width: '30%' }}>Handle</th>
           </tr>
         </thead>
         <tbody>
@@ -49,14 +58,15 @@ const UserTable = (props: UserTableProps) => {
               <td>{user.lastName}</td>
               <td>{user.email}</td>
               <td>
-                <button type="button" className="me-1 btn btn-outline-primary" title="Update"><FontAwesomeIcon icon={faPen} /></button>
-                <button type="button" onClick={() => handleDeleteButton(user)} className="btn btn-outline-primary" title="Delete"><FontAwesomeIcon icon={faTrash} /></button>
+                <button type="button" onClick={() => handleUpdateButton(user)} className="me-1 btn app-btn-primary" title="Update"><FontAwesomeIcon icon={faPen} /></button>
+                <button type="button" onClick={() => handleDeleteButton(user)} className="btn app-btn-primary" title="Delete"><FontAwesomeIcon icon={faTrash} /></button>
               </td>
             </tr>
           ))}
         </tbody>
       </Table>
       <DeleteUserModal show={showDeleteUserModal} onClose={() => setShowDeleteUserModal(false)} user={deleteUser} />
+      <UpdateUserModal show={showUpdateUserModal} onClose={() => setShowUpdateUserModal(false)} user={updateUser} />
     </div>
   );
 }
@@ -75,7 +85,7 @@ const UserPagination = (props: UserPaginationProps) => {
   const [data, setData] = useState<any[]>([]);
   const pageInit = parseInt(searchParams.get('page') || '1'); // !null or '1'
   const [page, setPage] = useState<number>(pageInit);
-  const size = 5;
+  const size = USERS_PER_PAGE;
 
   // Ensure the page state is always an integer when set
   useEffect(() => {
@@ -123,23 +133,23 @@ const UserPagination = (props: UserPaginationProps) => {
   // For modal
   const [showCreateUserModal, setShowCreateUserModal] = useState<boolean>(false)
   return <>
-    <button type="button" title="Create" onClick={() => setShowCreateUserModal(true)} className="me-1 my-2 btn btn-outline-primary">
+    <button type="button" title="Create" onClick={() => setShowCreateUserModal(true)} className="me-1 my-2 btn app-btn-primary">
       <FontAwesomeIcon icon={faPlus} />
     </button>
     <UserTable users={data} size={size} page={page} />
     {totalPage != 1 && (  // Show pagination when totalPage > 1
-      <nav aria-label="Page navigation example">
+      <nav aria-label="Page navigation example" >
         <ul className="pagination justify-content-center">
-          <li className="page-item"><button className="page-link" onClick={handlePreviousPage}>Previous</button></li>
+          <li className="page-item"><button className="page-link app-text-primary" onClick={handlePreviousPage}>Previous</button></li>
           {/* Generate page */}
           {Array.from({ length: totalPage }, (_, index) => (
             <li key={index} className="page-item">
               <button ref={el => pageRefs.current[index + 1] = el as HTMLButtonElement}
-                onClick={handlePage} className={`page-link ${page == index + 1 ? 'active' : ''}`}>{index + 1}</button>
+                onClick={handlePage} className={`page-link app-text-primary ${page == index + 1 ? 'app-active text-white' : ''}`}>{index + 1}</button>
             </li>
           ))}
           {/*  */}
-          <li className="page-item"><button className="page-link" onClick={handleNextPage}>Next</button></li>
+          <li className="page-item"><button className="page-link app-text-primary" onClick={handleNextPage}>Next</button></li>
         </ul>
       </nav>
     )}

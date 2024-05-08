@@ -1,5 +1,13 @@
+
+:root {
+  --primary-color: #353839d3;
+  --primary-bg-hover-color: #384b51d3;
+  --primary-table-header-bg: var(--primary-color);
+  --primary-text-color: var(var(--primary-color));
+}
+
 .App {
-  text-align: center;
+  /* text-align: center; */
 }
 
 .App-logo {
@@ -35,4 +43,29 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+
+/* Custom */
+.app-active {
+  background-color: var(--primary-bg-hover-color) !important;
+}
+.app-text-primary {
+  color: var(--primary-text-color) !important;
+}
+
+.app-btn-primary {
+  border: 1px solid var(--primary-color) !important;
+}
+.app-btn-primary:hover {
+  background-color: var(--primary-bg-hover-color) !important;
+  color: white !important;
+}
+
+.app-bg-primary {
+  background-color: var(--primary-color) !important;
+}
+
+.table-header-bg {
+  background-color: var(--primary-table-header-bg) !important;
 }

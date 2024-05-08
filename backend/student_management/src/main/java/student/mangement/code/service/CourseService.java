@@ -11,7 +11,9 @@ import student.mangement.code.model.User;
 
 public interface CourseService {
 
+	Course saveCourse(Course course);
 	Course findCourseByCourseId(int courseId);
+	Course findCourseByName(String name);
 	List<Course> findAllCourses();
 	List<CourseDTO> findCoursesByPage(int page, int size);
 	List<User> findStudentsOfCourse(int courseId);
@@ -19,4 +21,5 @@ public interface CourseService {
 	long countStudentsOfCourse(int courseId);
 	long countTeachersOfCourse(int courseId);
 	long countCourse();
+	void deleteCourse(Course existingCourse);
 }

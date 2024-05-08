@@ -5,38 +5,22 @@ import { Button, Form, Modal } from "react-bootstrap";
 import { useLocation } from "react-router";
 import { toast } from "react-toastify";
 
-interface CreateUserModalProps {
+interface CreateCourseModalProps {
     show: boolean;
     onClose: () => void;
 }
 
-const identifyRole = (path: string): string => {
-    if (path.includes('teacher')){
-         return "ROLE_TEACHER";
-        }
-    if (path.includes('student')) {
-        return "ROLE_STUDENT";
-    }
-    return "unknown";
-}
-
-const CreateUserModal = (props: CreateUserModalProps) => {
+const CreateCourseModal = (props: CreateCourseModalProps) => {
     const api = useApi();
-    const location = useLocation();
-    const role = identifyRole(location.pathname);   // To identify if we create teacher or student
     const { show, onClose } = props;
     const [showModal, setShowModal] = useState<boolean>(show)
     const [input, setInput] = useState({
-        role: role,
-        firstName: '',
-        lastName: '',
-        email: ''
+        name: '',
+        maxNumberOfStudent: 0,
     })
     const [isValidForm, setIsValidForm] = useState<boolean>(false)
     const [inputValid, setInputValid] = useState({
-        firstName: false,
-        lastName: false,
-        email: false,
+        maxNumberOfStudent: false,
     })
 
     useEffect(() => setShowModal(show)
@@ -49,17 +33,10 @@ const CreateUserModal = (props: CreateUserModalProps) => {
     const handleInput = (event: any) => {
         const name = event.target.name;
         const value = event.target.value;
-        if (name == 'firstName' || name == 'lastName') {
+        if (name == 'maxNumberOfStudent') {
             setInputValid(prevInputValid => ({
                 ...prevInputValid,
-                [name]: ValidateNameOfUser(value) // 
-            }))
-
-        }
-        if (name == 'email') {
-            setInputValid(prevInputValid => ({
-                ...prevInputValid,
-                [name]: ValidateEmail(value) // 
+                [name]: value > 0 && value < 120 // 
             }))
         }
         setInput(prevInput => ({
@@ -71,15 +48,11 @@ const CreateUserModal = (props: CreateUserModalProps) => {
     const handleCloseModal = () => {
         setShowModal(false);
         setInputValid({
-            firstName: false,
-            lastName: false,
-            email: false,
+            maxNumberOfStudent: false,
         })
         setInput({
-            role: role,
-            firstName: '',
-            lastName: '',
-            email: ''
+            name: '',
+            maxNumberOfStudent: 0,
         })
         onClose(); // Inform the parent about the closure, it will trigger "showModal" in "UserPagination" component
     }
@@ -88,15 +61,15 @@ const CreateUserModal = (props: CreateUserModalProps) => {
         event.preventDefault();
         console.log(input)
         try {
-            const response = await api.post(`/admin/user`, input);
+            const response = await api.post(`/admin/course`, input);
             if (response.status == 201) { // HttpStatus.CREATED
                 window.location.reload();
             } 
 
         } catch(err) {  // Email must be unique
             console.log(err)
-            toast.error("Email is used by another user"); // Notify the user of the error
-            alert("Email is used by another user")
+            toast.error("Course is created before!"); // Notify the user of the error
+            alert("Course is created before!")
         }
     }
 
@@ -105,26 +78,20 @@ const CreateUserModal = (props: CreateUserModalProps) => {
         <>
             <Modal show={showModal} onHide={handleCloseModal} >
                 <Modal.Header closeButton>
-                    <Modal.Title>Create user</Modal.Title>
+                    <Modal.Title>Create course</Modal.Title>
                 </Modal.Header>
                 <Form>
                     <Modal.Body>
                         
                         <Form.Group className="mb-3" controlId="formBasicEmail">
-                            <Form.Label>First Name</Form.Label>
-                            <Form.Control name="firstName" type="text" onChange={handleInput} placeholder="First" required />
+                            <Form.Label>Name</Form.Label>
+                            <Form.Control name="name" type="text" onChange={handleInput} placeholder="Course name" required />
                         </Form.Group>
-                        {!inputValid.firstName && (<p className="text-secondary">The fist name must only contain letters and the first letter must be capitalized!</p>)}
                         <Form.Group className="mb-3" controlId="formBasicEmail">
-                            <Form.Label>Last Name</Form.Label>
-                            <Form.Control name="lastName" type="text" onChange={handleInput} placeholder="Last" required />
+                            <Form.Label>Max number of student</Form.Label>
+                            <Form.Control name="maxNumberOfStudent" type="text" onChange={handleInput} placeholder="50" required />
                         </Form.Group>
-                        {!inputValid.lastName && (<p className="text-secondary">The last name must only contain letters and the first letter must be capitalized!</p>)}
-                        <Form.Group className="mb-3" controlId="formBasicEmail">
-                            <Form.Label>Email</Form.Label>
-                            <Form.Control name="email" type="email" onChange={handleInput} placeholder='username@example.com' required />
-                        </Form.Group>
-                        {!inputValid.email && (<p className="text-secondary">Example: "user@example.com", "user123@sub.domain.com".</p>)}
+                        {!inputValid.maxNumberOfStudent && (<p className="text-secondary">Max number has to be greater than zero and less than 120</p>)}
 
                     </Modal.Body>
                     <Modal.Footer>
@@ -141,4 +108,4 @@ const CreateUserModal = (props: CreateUserModalProps) => {
     );
 }
 
-export default CreateUserModal
+export default CreateCourseModal

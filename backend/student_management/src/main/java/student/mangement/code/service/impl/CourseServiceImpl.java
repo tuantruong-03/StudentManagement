@@ -82,6 +82,22 @@ public class CourseServiceImpl implements CourseService {
 			.count();
 	}
 
+	@Override
+	public Course findCourseByName(String name) {
+		Optional<Course> course = courseRepository.findByName(name);
+		return course.isEmpty() ? null : course.get();
+	}
+
+	@Override
+	public Course saveCourse(Course course) {
+		return courseRepository.save(course);
+	}
+
+	@Override
+	public void deleteCourse(Course existingCourse) {
+		courseRepository.delete(existingCourse);
+	}
+
 	
 
 }

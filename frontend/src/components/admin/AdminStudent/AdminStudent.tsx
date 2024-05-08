@@ -1,19 +1,20 @@
 import { useEffect, useRef, useState } from "react"
 import UserPagination from "../common/UserPagination"
 import useApi from "../../../hooks/Api"
+import { USERS_PER_PAGE } from "../../../constants/Constant";
 
 
 
 
 const AdminStudent = () => {
     const api = useApi();
-    const [totalPage, setTotalPage] = useState<number>(0); // Total number of teachers
-    const size = 5;
+    const [totalPage, setTotalPage] = useState<number>(0); // Total number of students
+    const size = USERS_PER_PAGE;
     // Fetch number of users
     useEffect(() => {
         async function fetchData() {
             try {
-                const response = await api.get('api/v1/numberOfTeachers');
+                const response = await api.get('api/v1/numberOfStudents');
                 const data: any = await response.data; // Assuming API returns the total number directly
                 const totalPage = Math.ceil(data / size);
                 setTotalPage(totalPage);
