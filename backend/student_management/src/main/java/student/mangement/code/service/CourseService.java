@@ -22,4 +22,5 @@ public interface CourseService {
 	long countTeachersOfCourse(int courseId);
 	long countCourse();
 	void deleteCourse(Course existingCourse);
+    Course updateCourse(Course course);
 }

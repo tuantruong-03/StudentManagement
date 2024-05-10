@@ -61,4 +61,19 @@ public class Course {
 		this.createdAt = createdAt;
 		this.modifiedAt = modifiedAt;
 	}
+
+	public Course(Integer courseId, String name, Integer maxNumberOfStudent, List<User> users) {
+		super();
+		this.courseId = courseId;
+		this.name = name;
+		this.maxNumberOfStudent = maxNumberOfStudent;
+		this.users = users;
+	}
+
+	// Override because list of users is not fed eagerly, so the instance of this class can't call "toString" by default (including users)
+	@Override
+	public String toString() {
+		return "Course [courseId=" + courseId + ", name=" + name + ", maxNumberOfStudent=" + maxNumberOfStudent
+				+ ", createdAt=" + createdAt + ", modifiedAt=" + modifiedAt + "]";
+	}
 }

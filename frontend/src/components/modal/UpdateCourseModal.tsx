@@ -1,26 +1,41 @@
 import { useEffect, useState } from "react";
 import useApi from "../../hooks/Api";
-import { ValidateEmail, ValidateNameOfUser } from "../../utils/Validate";
+import { ValidateEmail } from "../../utils/Validate";
 import { Button, Form, Modal } from "react-bootstrap";
 import { useLocation } from "react-router";
 import { toast } from "react-toastify";
 
-interface CreateCourseModalProps {
+interface UpdateCourseModalProps {
+    course: any;
     show: boolean;
     onClose: () => void;
 }
 
-const CreateCourseModal = (props: CreateCourseModalProps) => {
+
+const UpdateCourseModal = (props: UpdateCourseModalProps) => {
     const api = useApi();
-    const { show, onClose } = props;
+    const { show, onClose, course } = props;  // First render, "course" is null
     const [showModal, setShowModal] = useState<boolean>(show)
     const [input, setInput] = useState({
+        courseId: 0,
         name: '',
         maxNumberOfStudent: 0,
     })
+
+    useEffect(() => {
+        setInput({
+            courseId: course?.courseId,
+            name: course?.name,
+            maxNumberOfStudent: course?.maxNumberOfStudent,
+        })
+        console.log(course)
+
+    }, [course])
+
+
     const [isValidForm, setIsValidForm] = useState<boolean>(false)
     const [inputValid, setInputValid] = useState({
-        maxNumberOfStudent: false,
+        maxNumberOfStudent: true,
     })
 
     useEffect(() => setShowModal(show)
@@ -48,28 +63,30 @@ const CreateCourseModal = (props: CreateCourseModalProps) => {
     const handleCloseModal = () => {
         setShowModal(false);
         setInputValid({
-            maxNumberOfStudent: false,
+            maxNumberOfStudent: true,
         })
         setInput({
-            name: '',
-            maxNumberOfStudent: 0,
+            courseId: course?.courseId,
+            name: course?.name,
+            maxNumberOfStudent: course?.maxNumberOfStudent
+
         })
-        onClose(); // Inform the parent about the closure, it will trigger "showModal" in "UserPagination" component
+        onClose(); // Inform the parent about the closure, it will trigger "showModal" in "coursePagination" component
     }
 
     const handleSubmitButton = async (event: any) => {
         event.preventDefault();
         console.log(input)
         try {
-            const response = await api.post(`/admin/course`, input);
-            if (response.status == 201) { // HttpStatus.CREATED
+            const response = await api.post(`/admin/course/put`, input);
+            console.log(response.status)
+            if (response.status == 200) { // HttpStatus.OK
                 window.location.reload();
-            } 
+            }
 
-        } catch(err) {  // Email must be unique
+        } catch (err) {
             console.log(err)
-            toast.error("Course is created before!"); // Notify the user of the error
-            alert("Course is created before!")
+            alert("Invalid course")
         }
     }
 
@@ -82,14 +99,14 @@ const CreateCourseModal = (props: CreateCourseModalProps) => {
                 </Modal.Header>
                 <Form>
                     <Modal.Body>
-                        
-                        <Form.Group className="mb-3" controlId="formBasicEmail">
+
+                    <Form.Group className="mb-3" controlId="formBasicEmail">
                             <Form.Label>Name</Form.Label>
-                            <Form.Control name="name" type="text" onChange={handleInput} placeholder="Course name" required />
+                            <Form.Control name="name" type="text" value={input.name} onChange={handleInput} placeholder="Course name" required />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="formBasicEmail">
                             <Form.Label>Max number of student</Form.Label>
-                            <Form.Control name="maxNumberOfStudent" type="number" onChange={handleInput} placeholder="50" required />
+                            <Form.Control name="maxNumberOfStudent" value={input.maxNumberOfStudent} type="number" onChange={handleInput} placeholder="50" required />
                         </Form.Group>
                         {!inputValid.maxNumberOfStudent && (<p className="text-secondary">Max number has to be greater than zero and less than 120</p>)}
 
@@ -108,4 +125,4 @@ const CreateCourseModal = (props: CreateCourseModalProps) => {
     );
 }
 
-export default CreateCourseModal
+export default UpdateCourseModal

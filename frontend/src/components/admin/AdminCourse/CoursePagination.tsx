@@ -7,6 +7,7 @@ import CreateCourseModal from "../../modal/CreateCourseModal";
 import { Table } from "react-bootstrap";
 import DeleteCourseModal from "../../modal/DeleteCourseModal";
 import { COURSES_PER_PAGE } from "../../../constants/Constant";
+import UpdateCourseModal from "../../modal/UpdateCourseModal";
 
 // This is for "AdminStudent", "AdminTeacher"
 
@@ -23,11 +24,17 @@ const CourseTable = (props: CourseTableProps) => {
 
   // For modal
   const [showDeleteCourseModal, setShowDeleteCourseModal] = useState<boolean>(false)
+  const [showUpdateCourseModal, setShowUpdateCourseModal] = useState<boolean>(false)
   const [deleteCourse, setDeleteCourse] = useState(null);
+  const [updateCourse, setUpdateCourse] = useState(null);
 
   const handleDeleteButton = (course: any) => {
     setShowDeleteCourseModal(true);
     setDeleteCourse(course);
+  }
+  const handleUpdateButton = (course: any) => {
+    setShowUpdateCourseModal(true);
+    setUpdateCourse(course);
   }
 
   return (
@@ -50,7 +57,7 @@ const CourseTable = (props: CourseTableProps) => {
               <td>{course.currentNumberOfStudent}</td>
               <td>{course.maxNumberOfStudent}</td>
               <td>
-                <button type="button" className="me-1 btn app-btn-primary" title="Update"><FontAwesomeIcon icon={faPen} /></button>
+                <button type="button" onClick={() => handleUpdateButton(course)} className="me-1 btn app-btn-primary" title="Update"><FontAwesomeIcon icon={faPen} /></button>
                 <button type="button" onClick={() => handleDeleteButton(course)} className="btn app-btn-primary" title="Delete"><FontAwesomeIcon icon={faTrash} /></button>
               </td>
             </tr>
@@ -58,6 +65,7 @@ const CourseTable = (props: CourseTableProps) => {
         </tbody>
       </Table>
       <DeleteCourseModal show={showDeleteCourseModal} onClose={() => setShowDeleteCourseModal(false)} course={deleteCourse} />
+      <UpdateCourseModal show={showUpdateCourseModal} onClose={() => setShowUpdateCourseModal(false)} course={updateCourse} />
     </div>
   );
 }

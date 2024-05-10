@@ -1,5 +1,6 @@
 package student.mangement.code.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -96,6 +97,21 @@ public class CourseServiceImpl implements CourseService {
 	@Override
 	public void deleteCourse(Course existingCourse) {
 		courseRepository.delete(existingCourse);
+	}
+
+	@Override
+	public Course updateCourse(Course course) {
+		Optional<Course> existingCourse = courseRepository.findByCourseId(course.getCourseId());
+		if (existingCourse.isEmpty()) {
+			return null;
+		}
+		Course updatedCourse = existingCourse.get();
+		updatedCourse.setName(course.getName());
+		updatedCourse.setMaxNumberOfStudent(course.getMaxNumberOfStudent());
+		updatedCourse.setModifiedAt(new Date());
+		courseRepository.save(updatedCourse);
+
+		return updatedCourse;
 	}
 
 	
