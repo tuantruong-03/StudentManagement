@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
-import { faPen, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faPen, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import useApi from "../../../hooks/Api";
 import CreateCourseModal from "../../modal/CreateCourseModal";
 import { Table } from "react-bootstrap";
@@ -57,6 +57,7 @@ const CourseTable = (props: CourseTableProps) => {
               <td>{course.currentNumberOfStudent}</td>
               <td>{course.maxNumberOfStudent}</td>
               <td>
+                <Link to={'/admin/course/' + course.courseId} style={{zIndex: 3}} title="View" className="me-1 btn app-btn-primary"><FontAwesomeIcon icon={faEye} /></Link>
                 <button type="button" onClick={() => handleUpdateButton(course)} className="me-1 btn app-btn-primary" title="Update"><FontAwesomeIcon icon={faPen} /></button>
                 <button type="button" onClick={() => handleDeleteButton(course)} className="btn app-btn-primary" title="Delete"><FontAwesomeIcon icon={faTrash} /></button>
               </td>

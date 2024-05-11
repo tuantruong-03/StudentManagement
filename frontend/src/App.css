@@ -69,3 +69,7 @@
 .table-header-bg {
   background-color: var(--primary-table-header-bg) !important;
 }
+
+.table-row:hover {
+  opacity: 0.9;
+}

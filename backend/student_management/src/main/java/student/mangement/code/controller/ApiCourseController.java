@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import student.mangement.code.dto.CourseDTO;
 import student.mangement.code.model.Course;
+import student.mangement.code.model.User;
 import student.mangement.code.service.CourseService;
 
 
@@ -55,6 +57,20 @@ public class ApiCourseController {
 		System.out.println(body.toString());
 		Long count = courseService.countCourse();
 		return new ResponseEntity<>(null,HttpStatus.OK);
+	}
+
+
+	@GetMapping("/course/{courseId}/students")
+	ResponseEntity<?> processGetStudentsOfCourse(@PathVariable(name = "courseId") Integer courseId) {
+		List <User> studentList = courseService.findStudentsOfCourse(courseId);
+		return new ResponseEntity<>(studentList ,HttpStatus.OK);
+	}
+
+	
+	@GetMapping("/course/{courseId}/teachers")
+	ResponseEntity<?> processGetTeachersOfCourse(@PathVariable(name = "courseId") Integer courseId) {
+		List <User> teacherList = courseService.findTeachersOfCourse(courseId);
+		return new ResponseEntity<>(teacherList ,HttpStatus.OK);
 	}
 
 
