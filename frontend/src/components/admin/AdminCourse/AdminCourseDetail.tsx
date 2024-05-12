@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Table } from "react-bootstrap";
 import { faPen, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import InsertTeacherToCourseModal from "../../modal/InsertTeacherToCourseModal";
+import InsertStudentToCourseModal from "../../modal/InsertStudentToCourseModal";
 
 
 
@@ -36,7 +37,9 @@ const UserTable = (props: UserTableProps) => {
             <Table bordered style={{ minWidth: '800px', tableLayout: 'fixed' }}>
                 <thead className='thead'>
                     <tr>
-                        <th scope="col" className="text-white" style={{ width: '5%' }}></th>
+                    <th scope="col" className="table-header-bg text-white" style={{ width: '5%' }}>
+                            <input type="checkbox"  />
+                            </th>
                         <th scope="col" className="table-header-bg text-white" style={{ width: '10%' }}>#</th>
                         <th scope="col" className="table-header-bg text-white" style={{ width: '20%' }}>First Name</th>
                         <th scope="col" className="table-header-bg text-white" style={{ width: '20%' }}>Last Name</th>
@@ -111,6 +114,7 @@ const AdminCourseDetail = () => {
 
 
   const [showInsertTeacherToCourseModal, setShowInsertTeacherToCourseModal] = useState<boolean>(false)
+  const [showInsertStudentToCourseModal, setShowInsertStudentToCourseModal] = useState<boolean>(false)
 
     return (
         <>  
@@ -129,12 +133,13 @@ const AdminCourseDetail = () => {
             <div className="student-list">
                 <div className="d-flex align-items-center ">
                     <h1 >Student list </h1>
-                    <button type="button" title="Create" className="ms-3 my-2 btn app-btn-primary">
+                    <button type="button" title="Create"  onClick={() => setShowInsertStudentToCourseModal(true)} className="ms-3 my-2 btn app-btn-primary">
                         <FontAwesomeIcon icon={faPlus} />
                     </button>
                 </div>
 
                 {students.length > 0 &&<UserTable users={students} />}
+                <InsertStudentToCourseModal show={showInsertStudentToCourseModal} exceptStudents={students} onClose={() => {setShowInsertStudentToCourseModal(false)}} />
 
             </div>
         </>

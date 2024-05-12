@@ -73,3 +73,7 @@
 .table-row:hover {
   opacity: 0.9;
 }
+.input-search {
+  border-radius: 3px;
+  border-width: 1px;
+}

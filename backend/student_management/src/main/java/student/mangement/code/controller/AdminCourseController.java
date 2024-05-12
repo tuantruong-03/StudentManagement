@@ -91,7 +91,7 @@ public class AdminCourseController {
 		}
 	}
 
-	@PostMapping("/{courseId}/insertTeacher")
+	@PostMapping("/{courseId}/insertUser")
 	ResponseEntity<?> processInsertTeacherToCourse(@PathVariable(name = "courseId") String courseId, @RequestBody List<String> body) {
 		System.out.println(body.toString());
 		Map<String, Object> response = new HashMap<>();
