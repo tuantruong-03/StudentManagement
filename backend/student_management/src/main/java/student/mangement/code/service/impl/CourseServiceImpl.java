@@ -114,6 +114,13 @@ public class CourseServiceImpl implements CourseService {
 		return updatedCourse;
 	}
 
+	@Override
+	public void insertUserToCourse(User user, Course course) {
+		List<User> userList = course.getUsers();
+		userList.add(user);
+		courseRepository.save(course);
+	}
+
 	
 
 }
