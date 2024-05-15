@@ -1,19 +1,15 @@
 package student.mangement.code.model;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.security.core.GrantedAuthority;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.Data;
 
 
 @Data
-@Table(name = "roles")
-@Entity
+@Document(collection = "Roles")
 public class Role implements GrantedAuthority {
 	/**
 	 * 
@@ -21,11 +17,9 @@ public class Role implements GrantedAuthority {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "role_id")
 	private Integer roleId;
 	
-	@Column(name = "authority")
+	@Field("authority")
 	private String authority;
 
 	@Override

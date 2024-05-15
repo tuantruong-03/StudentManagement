@@ -4,66 +4,101 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Table } from "react-bootstrap";
 import { faPen, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import InsertTeacherToCourseModal from "../../modal/InsertTeacherToCourseModal";
-import InsertStudentToCourseModal from "../../modal/InsertStudentToCourseModal";
+import InsertUserToCourseModal from "../../modal/InsertUserToCourseModal";
+import DeleteUserFromCourseModal from "../../modal/DeleteUserFromCourseModal";
 
 
 
 interface UserTableProps {
     users: any[],
+    role: string,
 
 }
 
+const identifyApiUrl = (role: string): string => {
+    if (role == 'teacher') {
+        return '/api/v1/allTeachers'
+    }
+    if (role == 'student') {
+        return '/api/v1/allStudents'
+    }
+    return "unknown"
+}
+
 const UserTable = (props: UserTableProps) => {
-    const { users } = props;
+    const { users, role } = props;
+
+    const [deleteUsers, setDeleteUsers] = useState<string[]>([]) // Just contain user email
+
+    const apiUrl = identifyApiUrl(role);    // Define API to fetch list of teachers or students in "InsertUserToCourseModal"
 
     // For modal
-    const [showUpdateUserModal, setShowUpdateUserModal] = useState<boolean>(false)
-    const [showDeleteUserModal, setShowDeleteUserModal] = useState<boolean>(false)
-    const [deleteUser, setDeleteUser] = useState(null);
-    const [updateUser, setUpdateUser] = useState(null);
+    const [showInsertUserToCourseModal, setShowInsertUserToCourseModal] = useState<boolean>(false)
+    const [showDeleteUserFromCourseModal, setShowDeleteUserFromCourseModal] = useState<boolean>(false)
 
-    const handleDeleteButton = (user: any) => {
-        setShowDeleteUserModal(true);
-        setDeleteUser(user);
+    const handleCheckBoxToggle = (userEmail: string) => {
+        if (deleteUsers.includes(userEmail)) {
+            setDeleteUsers(deleteUsers.filter(email => email !== userEmail))
+        } else {
+            setDeleteUsers([...deleteUsers, userEmail])
+        }
     }
-
-    const handleUpdateButton = (user: any) => {
-        setShowUpdateUserModal(true);
-        setUpdateUser(user);
+    const handleSelectAllUsers = () => {
+        if (deleteUsers.length < users.length) {
+            const userEmails = users.map(user => user.email);
+            setDeleteUsers(userEmails)
+        } else {
+            setDeleteUsers([])
+        }
     }
 
     return (
-        <div style={{ overflowX: 'auto', textAlign: 'center' }}>
-            <Table bordered style={{ minWidth: '800px', tableLayout: 'fixed' }}>
-                <thead className='thead'>
-                    <tr>
-                    <th scope="col" className="table-header-bg text-white" style={{ width: '5%' }}>
-                            <input type="checkbox"  />
+        <>
+            <div className="header d-flex align-items-center">
+                <h1 style={{ display: 'inline-block' }}>List</h1>
+                <button type="button" title="Create" onClick={() => setShowInsertUserToCourseModal(true)} className="mx-3 my-2 btn app-btn-primary">
+                    <FontAwesomeIcon icon={faPlus} />
+                </button>
+                <button type="button" onClick={() => setShowDeleteUserFromCourseModal(true)} className="btn app-btn-primary" title="Delete" disabled={deleteUsers.length == 0}><FontAwesomeIcon icon={faTrash} /></button>
+            </div>
+
+            <div style={{ overflowX: 'auto', textAlign: 'center' }}>
+                <Table bordered style={{ minWidth: '800px', tableLayout: 'fixed' }}>
+                    <thead className='thead'>
+                        <tr>
+                            <th scope="col" className="table-header-bg text-white" style={{ width: '5%' }}>
+                                <input type="checkbox" onChange={handleSelectAllUsers}/>
                             </th>
-                        <th scope="col" className="table-header-bg text-white" style={{ width: '10%' }}>#</th>
-                        <th scope="col" className="table-header-bg text-white" style={{ width: '20%' }}>First Name</th>
-                        <th scope="col" className="table-header-bg text-white" style={{ width: '20%' }}>Last Name</th>
-                        <th scope="col" className="table-header-bg text-white" style={{ width: '30%' }}>Email</th>
-                        <th scope="col" className="table-header-bg text-white" style={{ width: '20%' }}>Handle</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {users.map((user, index) => (
-                        <tr key={index}>
-                            <td><input type="checkbox" /></td>
-                            <th scope="row">{index + 1}</th>
-                            <td>{user.firstName}</td>
-                            <td>{user.lastName}</td>
-                            <td style={{ overflowX: 'hidden' }}>{user.email}</td>
-                            <td>
-                                <button type="button" onClick={() => handleUpdateButton(user)} className="me-1 btn app-btn-primary" title="Update"><FontAwesomeIcon icon={faPen} /></button>
-                                <button type="button" onClick={() => handleDeleteButton(user)} className="btn app-btn-primary" title="Delete"><FontAwesomeIcon icon={faTrash} /></button>
-                            </td>
+                            <th scope="col" className="table-header-bg text-white" style={{ width: '10%' }}>#</th>
+                            <th scope="col" className="table-header-bg text-white" style={{ width: '20%' }}>First Name</th>
+                            <th scope="col" className="table-header-bg text-white" style={{ width: '20%' }}>Last Name</th>
+                            <th scope="col" className="table-header-bg text-white" style={{ width: '30%' }}>Email</th>
                         </tr>
-                    ))}
-                </tbody>
-            </Table>
-        </div>
+                    </thead>
+                    <tbody>
+                        {users.map((user, index) => (
+                            <tr key={user.userId}>
+                                <td><input type="checkbox" onChange={() => handleCheckBoxToggle(user.email)} checked={deleteUsers.includes(user.email)} /></td>
+                                <th scope="row">{user.userId}</th>
+                                <td>{user.firstName}</td>
+                                <td>{user.lastName}</td>
+                                <td style={{ overflowX: 'hidden' }}>{user.email}</td>
+                                {/* <td>
+                            </td> */}
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
+            </div>
+            <InsertUserToCourseModal API_URL={apiUrl}
+                show={showInsertUserToCourseModal} exceptUsers={users}
+                onClose={() => { setShowInsertUserToCourseModal(false) }} />
+            <DeleteUserFromCourseModal deleteUsers={deleteUsers} 
+            show={showDeleteUserFromCourseModal} 
+            onClose={() => {setShowDeleteUserFromCourseModal(false)}}/>
+
+        </>
+
     );
 }
 
@@ -113,34 +148,15 @@ const AdminCourseDetail = () => {
     }, [])
 
 
-  const [showInsertTeacherToCourseModal, setShowInsertTeacherToCourseModal] = useState<boolean>(false)
-  const [showInsertStudentToCourseModal, setShowInsertStudentToCourseModal] = useState<boolean>(false)
 
     return (
-        <>  
+        <>
             <div className="teacher-list">
-                <div className="d-flex align-items-center ">
-                    <h1 >Teacher list </h1>
-                    <button type="button" title="Create" onClick={() => setShowInsertTeacherToCourseModal(true)} className="ms-3 my-2 btn app-btn-primary">
-                        <FontAwesomeIcon icon={faPlus} />
-                    </button>
-                </div>
-                {teachers.length > 0 && <UserTable users={teachers} />}
-                <InsertTeacherToCourseModal show={showInsertTeacherToCourseModal} exceptTeachers={teachers} onClose={() => {setShowInsertTeacherToCourseModal(false)}} />
-                
+                {teachers.length > 0 && <UserTable users={teachers} role='teacher' />}
             </div>
 
             <div className="student-list">
-                <div className="d-flex align-items-center ">
-                    <h1 >Student list </h1>
-                    <button type="button" title="Create"  onClick={() => setShowInsertStudentToCourseModal(true)} className="ms-3 my-2 btn app-btn-primary">
-                        <FontAwesomeIcon icon={faPlus} />
-                    </button>
-                </div>
-
-                {students.length > 0 &&<UserTable users={students} />}
-                <InsertStudentToCourseModal show={showInsertStudentToCourseModal} exceptStudents={students} onClose={() => {setShowInsertStudentToCourseModal(false)}} />
-
+                {students.length > 0 && <UserTable users={students} role='student' />}
             </div>
         </>
 

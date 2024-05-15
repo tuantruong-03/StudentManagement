@@ -8,7 +8,6 @@ import AuthProvider from './hooks/AuthProvider';
 import { BrowserRouter, Navigate, Route, Router, Routes } from 'react-router-dom';
 import ProtectedRoute from './router/ProtectedRoute';
 import Homepage from './components/common/Homepage';
-import { ToastContainer } from 'react-toastify';
 
 function App() {
   return (
@@ -18,11 +17,9 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route element={<ProtectedRoute/>}>
             <Route path='*' element={<Homepage/>}/>
-            <Route path='/students' element={<ListOfStudents/>}/>
           </Route>
         </Routes>
       </AuthProvider>
-      <ToastContainer/>
     </div>
 
   );

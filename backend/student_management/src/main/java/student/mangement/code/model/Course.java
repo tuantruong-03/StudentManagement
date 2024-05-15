@@ -3,50 +3,32 @@ package student.mangement.code.model;
 import java.util.Date;
 import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import org.springframework.context.annotation.ComponentScan.Filter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import lombok.Data;
 
 @Data
-@Entity
-@Table(name = "courses")
+@Document(collection = "Courses")
 public class Course {	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "course_id")
+	@Field(name = "course_id")
 	private Integer courseId;
 	
-	@Column(name = "name")
 	private String name;
 	
-	@Column(name="max_number_of_student")
 	private Integer maxNumberOfStudent;
-	
-	@Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Field(name = "created_at")
     private Date createdAt;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "modified_at")
+    @Field(name = "modified_at")
     private Date modifiedAt;
     
     
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-    		name = "courses_users"
-    		,joinColumns = {@JoinColumn(name="course_id")}
-    		,inverseJoinColumns = {@JoinColumn(name = "user_id")}
-    		)
+    @DBRef
     private List<User> users;
 
 	public Course() {

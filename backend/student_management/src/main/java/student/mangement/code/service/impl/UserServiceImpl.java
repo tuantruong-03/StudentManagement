@@ -1,5 +1,7 @@
 package student.mangement.code.service.impl;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +25,9 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<User> findAllUsers() {
-		return userRepository.findAll();
+		List<User> userList = userRepository.findAll();
+		Collections.sort(userList, Comparator.comparing(User::getUserId)); // Sort in ascending order of userId
+		return userList;
 	}
 
 	@Override

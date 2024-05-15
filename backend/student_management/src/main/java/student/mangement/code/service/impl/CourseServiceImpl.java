@@ -1,8 +1,10 @@
 package student.mangement.code.service.impl;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -118,6 +120,16 @@ public class CourseServiceImpl implements CourseService {
 	public void insertUserToCourse(User user, Course course) {
 		List<User> userList = course.getUsers();
 		userList.add(user);
+		courseRepository.save(course);
+	}
+
+	@Override
+	public void deleteUserFromCourse(User user, Course course) {
+		List<User> userList = course.getUsers(); 
+		List<User> filteredList = userList.stream()
+			.filter(u -> !u.getEmail().equals(user.getEmail()))
+			.collect(Collectors.toList());
+		course.setUsers(filteredList);
 		courseRepository.save(course);
 	}
 

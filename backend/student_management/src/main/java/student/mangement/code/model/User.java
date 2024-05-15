@@ -6,28 +6,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+
 import lombok.Data;
 
 @Data
-@Table(name = "users")
-@Entity
+@Document(collation = "Users")
 public class User implements UserDetails {
 	
 	/**
@@ -36,8 +28,6 @@ public class User implements UserDetails {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "user_id")
 	private Integer userId;
 	
 	private String email;	// Use email as username
@@ -46,22 +36,17 @@ public class User implements UserDetails {
 	private String firstName;
 	private String lastName;
 	
-	@Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Field(name = "created_at")
     private Date createdAt;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "modified_at")
+    @Field(name = "modified_at")
     private Date modifiedAt;
-    
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "users_roles",
-    joinColumns = @JoinColumn(name="user_id"),
-    inverseJoinColumns = @JoinColumn(name="role_id"))
+
+	@DBRef
     Set<Role> authorities;
     
 	@JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users")
+	@DBRef
     List<Course> courses;
     
 

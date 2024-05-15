@@ -92,8 +92,8 @@ public class AdminCourseController {
 	}
 
 	@PostMapping("/{courseId}/insertUser")
-	ResponseEntity<?> processInsertTeacherToCourse(@PathVariable(name = "courseId") String courseId, @RequestBody List<String> body) {
-		System.out.println(body.toString());
+	ResponseEntity<?> processInsertUserToCourse(@PathVariable(name = "courseId") String courseId, @RequestBody List<String> body) {
+		// body: a list of users to insert to course
 		Map<String, Object> response = new HashMap<>();
 		try {
 			Integer courseIdValue = Integer.parseInt(courseId);
@@ -108,6 +108,30 @@ public class AdminCourseController {
 			}
 			return new ResponseEntity<>(null, HttpStatus.OK);
 		} catch(NumberFormatException e) {
+			response.put("message", "Invalid course id!");
+			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		}
+	}
+	@PostMapping("/{courseId}/deleteUser")
+	ResponseEntity<?> processDeleteUserFromCourse(@PathVariable(name = "courseId") String courseId, @RequestBody List<String> body) {
+		// body: a list of user emails to insert to course
+		System.out.println(body.toString());
+		Map<String, Object> response = new HashMap<>();
+		try {
+			Integer courseIdValue = Integer.parseInt(courseId);
+			Course course = courseService.findCourseByCourseId(courseIdValue);
+			if (course == null) {	
+				response.put("message", "Invalid course id!");
+				return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+			}
+			for (String email : body) {
+				User user = userService.findUserByEmail(email);
+				courseService.deleteUserFromCourse(user, course);
+			}
+			System.out.println("delete");
+			return new ResponseEntity<>(null, HttpStatus.OK);
+		} catch(NumberFormatException e) {
+			System.err.println(e);
 			response.put("message", "Invalid course id!");
 			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 		}
