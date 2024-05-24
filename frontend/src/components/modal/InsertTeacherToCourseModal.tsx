@@ -11,6 +11,8 @@ interface TeacherTableProps  {
 const TeacherTable = (props : TeacherTableProps) => {
     const {teachers, onSelectTeacher} = props;
     const [selectedTeachers, setSelectedTeachers] = useState<string[]>([])  // Just insert on ly email 
+    const [displayedTeachers, setDisplayedTeachers] = useState<any[]>(teachers)
+    // console.log("displayedTeachers ", displayedTeachers)
     const handleCheckBoxToggle = (teacherEmail: string) => {
         if (selectedTeachers.includes(teacherEmail)) {
             setSelectedTeachers(selectedTeachers.filter(email => email !== teacherEmail))
@@ -26,12 +28,21 @@ const TeacherTable = (props : TeacherTableProps) => {
             setSelectedTeachers([])
         }
     }
+    const handleSearch = (event: any) => {
+        const q = event.target.value.toLowerCase(); // query
+        const displayedStudents = teachers.filter(student => student.email.toLowerCase().includes(q) 
+                    || student.firstName.toLowerCase().includes(q) 
+                    || student.lastName.toLowerCase().includes(q))
+        setDisplayedTeachers(displayedStudents)
+    }
     useEffect(() => {
         onSelectTeacher(selectedTeachers)
-        console.log(selectedTeachers)
     }, [selectedTeachers])
 
     return (
+        <>
+        <input type="text" className="p-1 mb-2 input-search" onChange={handleSearch} placeholder="Search ..." />
+
         <div style={{ overflowX: 'auto', textAlign: 'center' }}>
             <Table bordered style={{ minWidth: '600px', tableLayout: 'fixed' }}>
                 <thead className='thead'>
@@ -39,17 +50,17 @@ const TeacherTable = (props : TeacherTableProps) => {
                         <th scope="col" className="table-header-bg text-white" style={{ width: '5%' }}>
                             <input type="checkbox" checked={selectedTeachers.length == teachers.length} onChange={handleSelectAllToggle} />
                             </th>
-                        <th scope="col" className="table-header-bg text-white" style={{ width: '10%' }}>#</th>
+                        <th scope="col" className="table-header-bg text-white" style={{ width: '10%' }}>ID</th>
                         <th scope="col" className="table-header-bg text-white" style={{ width: '20%' }}>First Name</th>
                         <th scope="col" className="table-header-bg text-white" style={{ width: '20%' }}>Last Name</th>
                         <th scope="col" className="table-header-bg text-white" style={{ width: '50%' }}>Email</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {teachers.map((teacher, index) => (
-                        <tr key={index}>
+                    {displayedTeachers.map((teacher, index) => (
+                        <tr key={teacher.userId}>
                             <td><input type="checkbox" onChange={() => handleCheckBoxToggle(teacher.email)} checked={selectedTeachers.includes(teacher.email)} /></td>
-                            <th scope="row">{index + 1}</th>
+                            <th scope="row">{teacher.userId}</th>
                             <td>{teacher.firstName}</td>
                             <td>{teacher.lastName}</td>
                             <td style={{ overflowX: 'hidden' }}>{teacher.email}</td>
@@ -59,6 +70,7 @@ const TeacherTable = (props : TeacherTableProps) => {
                 </tbody>
             </Table>
         </div>
+        </>
     );
 }
 
@@ -79,23 +91,9 @@ const InsertTeacherToCourseModal = (props: InsertTeacherToCourseModalProps) => {
     const [teachers, setTeachers] = useState<any[]>([]) // List of teachers is not in the course
     const [showModal, setShowModal] = useState<boolean>(show)
 
-    const fetchAllTeachers = async () => {
-        try {
-            const response = await api.get(`/api/v1/allTeachers`);
-            if (response.status == 200) {
-                const allTeachers = response.data
-                const insertableTeachers = allTeachers.filter((teacher: any) => !exceptTeachers.some(exceptTeacher => exceptTeacher.email === teacher.email))
-                setTeachers(insertableTeachers)
 
-            } else {
-                throw new Error("Can't fetch this api")
-            }
 
-        } catch (err) {
-            throw err;
-        }
-
-    }
+  
 
     const handleCloseModal = () => {
         setShowModal(false)
@@ -105,7 +103,7 @@ const InsertTeacherToCourseModal = (props: InsertTeacherToCourseModalProps) => {
     const handleSubmitButton = async () => {
         console.log(selectedTeachers)
         try {
-            const response = await api.post(`/admin/course/${courseId}/insertTeacher`,selectedTeachers);
+            const response = await api.post(`/admin/course/${courseId}/insertUser`,selectedTeachers);
 
             if (response.status == 200) {
                 window.location.reload();
@@ -118,13 +116,31 @@ const InsertTeacherToCourseModal = (props: InsertTeacherToCourseModalProps) => {
             throw err;
         }
     }
+
  
     useEffect(() => {
         setShowModal(show)
     }, [show])
     useEffect(() => {
+        const fetchAllTeachers = async () => {
+            try {
+                const response = await api.get(`/api/v1/allTeachers`);
+                if (response.status == 200) {
+                    const allTeachers = response.data
+                    const insertableTeachers = allTeachers.filter((teacher: any) => exceptTeachers.every(exceptTeacher => exceptTeacher.email !== teacher.email))
+                    setTeachers(insertableTeachers)
+    
+                } else {
+                    throw new Error("Can't fetch this api")
+                }
+    
+            } catch (err) {
+                throw err;
+            }
+    
+        }
         fetchAllTeachers()
-    }, [])
+    }, [exceptTeachers])
 
     const [selectedTeachers, setSelectedTeachers] = useState<string[]>([])  // Use email to identify that teacher
     const handleOnSelectTeacher = (selectedTeachers: string[]) => {

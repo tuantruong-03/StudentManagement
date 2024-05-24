@@ -5,65 +5,75 @@ import { Table } from "react-bootstrap";
 import { faPen, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import InsertTeacherToCourseModal from "../../modal/InsertTeacherToCourseModal";
 import InsertStudentToCourseModal from "../../modal/InsertStudentToCourseModal";
+import DeleteUserFromCourseModal from "../../modal/DeleteUserFromCourseModal";
 
 
 
 interface UserTableProps {
     users: any[],
-
+    onSelectUsers: (selectUsers: any[]) => void
 }
 
 const UserTable = (props: UserTableProps) => {
-    const { users } = props;
-
+    const { users, onSelectUsers } = props;
+    const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
     // For modal
-    const [showUpdateUserModal, setShowUpdateUserModal] = useState<boolean>(false)
-    const [showDeleteUserModal, setShowDeleteUserModal] = useState<boolean>(false)
-    const [deleteUser, setDeleteUser] = useState(null);
-    const [updateUser, setUpdateUser] = useState(null);
 
-    const handleDeleteButton = (user: any) => {
-        setShowDeleteUserModal(true);
-        setDeleteUser(user);
+
+
+    const handleSelectAllToggle = () => { 
+        if (selectedUsers.length < users.length) {    // Select all
+            const userEmails = users.map(user => user.email)
+            setSelectedUsers(userEmails)
+        } else { // Deselect all
+            setSelectedUsers([])
+        }
     }
 
-    const handleUpdateButton = (user: any) => {
-        setShowUpdateUserModal(true);
-        setUpdateUser(user);
+    const handleCheckBoxToggle = (userEmail: string) => {
+        if (selectedUsers.includes(userEmail)) {
+            setSelectedUsers(selectedUsers.filter(email => email !== userEmail))
+        } else {
+            setSelectedUsers([...selectedUsers, userEmail])
+        }
     }
+
+    useEffect(() => {
+        onSelectUsers(selectedUsers);
+    }, [selectedUsers])
 
     return (
+        <>
         <div style={{ overflowX: 'auto', textAlign: 'center' }}>
             <Table bordered style={{ minWidth: '800px', tableLayout: 'fixed' }}>
                 <thead className='thead'>
                     <tr>
                     <th scope="col" className="table-header-bg text-white" style={{ width: '5%' }}>
-                            <input type="checkbox"  />
+                            <input type="checkbox" onChange={handleSelectAllToggle} checked={selectedUsers.length == users.length}  />
                             </th>
-                        <th scope="col" className="table-header-bg text-white" style={{ width: '10%' }}>#</th>
+                        <th scope="col" className="table-header-bg text-white" style={{ width: '10%' }}>ID</th>
                         <th scope="col" className="table-header-bg text-white" style={{ width: '20%' }}>First Name</th>
                         <th scope="col" className="table-header-bg text-white" style={{ width: '20%' }}>Last Name</th>
                         <th scope="col" className="table-header-bg text-white" style={{ width: '30%' }}>Email</th>
-                        <th scope="col" className="table-header-bg text-white" style={{ width: '20%' }}>Handle</th>
                     </tr>
                 </thead>
                 <tbody>
                     {users.map((user, index) => (
-                        <tr key={index}>
-                            <td><input type="checkbox" /></td>
-                            <th scope="row">{index + 1}</th>
+                        <tr key={user.userId}>
+                            <td><input type="checkbox" onChange={() => handleCheckBoxToggle(user.email)} checked={selectedUsers.includes(user.email)} /></td>
+                            <th scope="row">{user.userId}</th>
                             <td>{user.firstName}</td>
                             <td>{user.lastName}</td>
                             <td style={{ overflowX: 'hidden' }}>{user.email}</td>
-                            <td>
-                                <button type="button" onClick={() => handleUpdateButton(user)} className="me-1 btn app-btn-primary" title="Update"><FontAwesomeIcon icon={faPen} /></button>
+                            {/* <td>
                                 <button type="button" onClick={() => handleDeleteButton(user)} className="btn app-btn-primary" title="Delete"><FontAwesomeIcon icon={faTrash} /></button>
-                            </td>
+                            </td> */}
                         </tr>
                     ))}
                 </tbody>
             </Table>
         </div>
+        </>
     );
 }
 
@@ -74,6 +84,8 @@ const AdminCourseDetail = () => {
     const courseId = decodeURIComponent(pathnameParts[pathnameParts.length - 1]);
     const [students, setStudents] = useState<any[]>([])
     const [teachers, setTeachers] = useState<any[]>([])
+    const [deleteStudents, setDeleteStudents] = useState<any[]>([])
+    const [deleteTeachers, setDeleteTeachers] = useState<any[]>([])
 
     const api = useApi();
     const fetchStudentList = async () => {
@@ -96,6 +108,7 @@ const AdminCourseDetail = () => {
             const response = await api.get(`/api/v1/course/${courseId}/teachers`);
             if (response.status == 200) {
                 const teachers = response.data;
+
                 setTeachers(teachers)
             } else {
                 throw new Error("Can't fetch this api")
@@ -115,30 +128,37 @@ const AdminCourseDetail = () => {
 
   const [showInsertTeacherToCourseModal, setShowInsertTeacherToCourseModal] = useState<boolean>(false)
   const [showInsertStudentToCourseModal, setShowInsertStudentToCourseModal] = useState<boolean>(false)
+  const [showDeleteUserFromCourseModal, setShowDeleteUserFromCourseModal] = useState<boolean>(false)
 
     return (
         <>  
             <div className="teacher-list">
                 <div className="d-flex align-items-center ">
-                    <h1 >Teacher list </h1>
+                    <h1 >List of teachers </h1>
                     <button type="button" title="Create" onClick={() => setShowInsertTeacherToCourseModal(true)} className="ms-3 my-2 btn app-btn-primary">
                         <FontAwesomeIcon icon={faPlus} />
                     </button>
+                    <button type="button" onClick={() => setShowDeleteUserFromCourseModal(true)} hidden={deleteTeachers.length == 0} className="ms-2 btn app-btn-primary" title="Delete">
+                        <FontAwesomeIcon icon={faTrash} />
+                    </button>
+
                 </div>
-                {teachers.length > 0 && <UserTable users={teachers} />}
+                {teachers.length > 0 && <UserTable users={teachers} onSelectUsers={(selectUsers) =>  setDeleteTeachers(selectUsers)}  />}
                 <InsertTeacherToCourseModal show={showInsertTeacherToCourseModal} exceptTeachers={teachers} onClose={() => {setShowInsertTeacherToCourseModal(false)}} />
+                <DeleteUserFromCourseModal show={showDeleteUserFromCourseModal} onClose={() => {setShowDeleteUserFromCourseModal(false)}} deleteUsers={deleteTeachers}/>
                 
             </div>
 
             <div className="student-list">
                 <div className="d-flex align-items-center ">
-                    <h1 >Student list </h1>
+                    <h1 >List of students </h1>
                     <button type="button" title="Create"  onClick={() => setShowInsertStudentToCourseModal(true)} className="ms-3 my-2 btn app-btn-primary">
                         <FontAwesomeIcon icon={faPlus} />
                     </button>
+                    <button type="button" onClick={() => setShowDeleteUserFromCourseModal(true)} hidden={deleteStudents.length == 0} className="ms-2 btn app-btn-primary" title="Delete"><FontAwesomeIcon icon={faTrash} /></button>
                 </div>
 
-                {students.length > 0 &&<UserTable users={students} />}
+                {students.length > 0 &&<UserTable users={students} onSelectUsers={(selectUsers) =>  setDeleteStudents(selectUsers)}  />}
                 <InsertStudentToCourseModal show={showInsertStudentToCourseModal} exceptStudents={students} onClose={() => {setShowInsertStudentToCourseModal(false)}} />
 
             </div>

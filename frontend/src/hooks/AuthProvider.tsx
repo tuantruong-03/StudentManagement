@@ -57,7 +57,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             if (response.status == 200) { // OK
                 setAuthState(prev => {
                     const userJson = Cookies.get('user');
-                    console.log("userJson", userJson)
                     let user = null;
                     if (userJson) {
                         try {

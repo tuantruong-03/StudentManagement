@@ -24,4 +24,5 @@ public interface CourseService {
 	void deleteCourse(Course existingCourse);
     Course updateCourse(Course course);
 	void insertUserToCourse(User user, Course course);
+	void deleteUserFromCourse(User user, Course course);
 }

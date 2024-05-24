@@ -31,11 +31,11 @@ public class ApiUserController {
 	// Teacher API
 	@GetMapping("/allTeachers")
 	@ResponseBody
-	ResponseEntity<List<UserDTO>> getTeachers() {
-		List<UserDTO> userList = userService.findAllUsers().stream()
+	ResponseEntity<List<User>> getTeachers() {
+		List<User> userList = userService.findAllUsers().stream()
                       .filter(user -> user.getAuthorities().stream()
                                          .anyMatch(authority -> "ROLE_TEACHER".equals(authority.getAuthority())))
-										 .map(user -> new UserDTO(user))
+
 					.toList();
 		return new ResponseEntity<>(userList, HttpStatus.OK);
 	}
@@ -62,11 +62,10 @@ public class ApiUserController {
 	// Student API	
 	@GetMapping("/allStudents")
 	@ResponseBody
-	ResponseEntity<List<UserDTO>> getStudents() {
-		List<UserDTO> userList = userService.findAllUsers().stream()
+	ResponseEntity<List<User>> getStudents() {
+		List<User> userList = userService.findAllUsers().stream()
                       .filter(user -> user.getAuthorities().stream()
                                          .anyMatch(authority -> "ROLE_STUDENT".equals(authority.getAuthority())))
-										 .map(user -> new UserDTO(user))
 					.toList();
 		return new ResponseEntity<>(userList, HttpStatus.OK);
 	}

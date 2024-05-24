@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router";
 import { useAuth } from "../../hooks/AuthProvider";
 import AdminDashboard from "../admin/AdminLayout";
 import AdminRoutes from "../admin/AdminRoutes";
@@ -5,6 +6,7 @@ import AdminRoutes from "../admin/AdminRoutes";
 
 const Homepage = () => {
     const auth = useAuth();
+    const navigate = useNavigate();
     const user = auth.user;
     const isAdmin: boolean = user?.authorities.some((auth: { authority: string; }) => auth.authority === 'ROLE_ADMIN');
     const isTeacher: boolean = user?.authorities.some((auth: { authority: string; }) => auth.authority === 'ROLE_TEACHER');

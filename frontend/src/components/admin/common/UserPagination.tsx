@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { faPen, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import useApi from "../../../hooks/Api";
 import CreateUserModal from "../../modal/CreateUserModal";
 import { Table } from "react-bootstrap";
@@ -78,6 +78,10 @@ interface UserPaginationProps {
   usersByPageApi: string
 }
 const UserPagination = (props: UserPaginationProps) => {
+  const location = useLocation();
+    // Check if the URL contains "teacher" or "student"
+  const isTeacher = location.pathname.includes('teacher');
+  const isStudent = location.pathname.includes('student');
   const api = useApi();   // Create useApi() hook to include 'Authorization'
   const { totalPage, usersByPageApi } = props
   const pageRefs = useRef<HTMLButtonElement[]>([]);
@@ -133,9 +137,14 @@ const UserPagination = (props: UserPaginationProps) => {
   // For modal
   const [showCreateUserModal, setShowCreateUserModal] = useState<boolean>(false)
   return <>
-    <button type="button" title="Create" onClick={() => setShowCreateUserModal(true)} className="me-1 my-2 btn app-btn-primary">
+    <div className="d-flex align-items-center">
+      <h1> {isTeacher && "List of teachers"}
+            {isStudent && "List of students"} </h1>
+      <button type="button" title="Create" onClick={() => setShowCreateUserModal(true)} className="ms-3 my-2 btn app-btn-primary">
       <FontAwesomeIcon icon={faPlus} />
     </button>
+    </div>
+   
     <UserTable users={data} size={size} page={page} />
     {totalPage != 1 && (  // Show pagination when totalPage > 1
       <nav aria-label="Page navigation example" >

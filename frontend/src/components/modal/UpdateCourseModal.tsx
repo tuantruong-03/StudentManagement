@@ -28,7 +28,6 @@ const UpdateCourseModal = (props: UpdateCourseModalProps) => {
             name: course?.name,
             maxNumberOfStudent: course?.maxNumberOfStudent,
         })
-        console.log(course)
 
     }, [course])
 

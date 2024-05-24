@@ -30,7 +30,6 @@ const UpdateUserModal = (props: UpdateUserModalProps) => {
             email: user?.email,
 
         })
-        console.log(user)
 
     }, [user])
 

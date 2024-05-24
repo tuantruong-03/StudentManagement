@@ -38,11 +38,11 @@ const CourseTable = (props: CourseTableProps) => {
   }
 
   return (
-    <div style={{ overflowX: 'auto', textAlign:'center' }}>
+    <div style={{ overflowX: 'auto', textAlign: 'center' }}>
       <Table bordered style={{ minWidth: '800px', tableLayout: 'fixed' }}>
         <thead className='thead'>
           <tr >
-            <th scope="col" className="table-header-bg text-white" style={{ width: '10%' }}>#</th>
+            <th scope="col" className="table-header-bg text-white" style={{ width: '10%' }}>ID</th>
             <th scope="col" className="table-header-bg text-white" style={{ width: '30%' }}>Name</th>
             <th scope="col" className="table-header-bg text-white" style={{ width: '30%' }}>Current number</th>
             <th scope="col" className="table-header-bg text-white" style={{ width: '30%' }}>Max number</th>
@@ -57,7 +57,7 @@ const CourseTable = (props: CourseTableProps) => {
               <td>{course.currentNumberOfStudent}</td>
               <td>{course.maxNumberOfStudent}</td>
               <td>
-                <Link to={'/admin/course/' + course.courseId} style={{zIndex: 3}} title="View" className="me-1 btn app-btn-primary"><FontAwesomeIcon icon={faEye} /></Link>
+                <Link to={'/admin/course/' + course.courseId} style={{ zIndex: 3 }} title="View" className="me-1 btn app-btn-primary"><FontAwesomeIcon icon={faEye} /></Link>
                 <button type="button" onClick={() => handleUpdateButton(course)} className="me-1 btn app-btn-primary" title="Update"><FontAwesomeIcon icon={faPen} /></button>
                 <button type="button" onClick={() => handleDeleteButton(course)} className="btn app-btn-primary" title="Delete"><FontAwesomeIcon icon={faTrash} /></button>
               </td>
@@ -133,9 +133,13 @@ const CoursePagination = (props: CoursePaginationProps) => {
   // For modal
   const [showCreateCourseModal, setShowCreateCourseModal] = useState<boolean>(false)
   return <>
-    <button type="button" title="Create" onClick={() => setShowCreateCourseModal(true)} className="me-1 my-2 btn app-btn-primary">
-      <FontAwesomeIcon icon={faPlus} />
-    </button>
+    <div className="d-flex align-items-center ">
+      <h1>List of courses</h1>
+      <button type="button" title="Create" onClick={() => setShowCreateCourseModal(true)} className="ms-3 my-2 btn app-btn-primary">
+        <FontAwesomeIcon icon={faPlus} />
+      </button>
+    </div>
+
     <CourseTable courses={data} size={size} page={page} />
     {totalPage != 1 && (  // Show pagination when totalPage > 1
       <nav aria-label="Page navigation example" >

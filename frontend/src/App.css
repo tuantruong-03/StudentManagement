@@ -8,6 +8,8 @@
 
 .App {
   /* text-align: center; */
+  height: 100vh;
+  background-color: #f7f9fa;
 }
 
 .App-logo {
@@ -77,3 +79,27 @@
   border-radius: 3px;
   border-width: 1px;
 }
+
+.fixed-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 250px; /* Adjust based on your sidebar width */
+  z-index: 1000;
+  background-color: rgba(146, 141, 141, 0.376) !important;
+}
+
+.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0; /* Same as sidebar width */
+  right: 0;
+  height: 60px; /* Adjust based on your header height */
+  background-color: #fff; /* Example background color */
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+}
+

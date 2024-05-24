@@ -12,13 +12,15 @@ const AdminLayout = () => {
         <div className="container-fluid">
             <div className="row">
                 {/* Sidebar */}
-               <Sidebar/>
+                <div className="col-md-3 col-lg-2">
+                     <Sidebar/>
+                </div>
+
 
                 {/* Main Content Area */}
-                <main className="col-md-9 col-lg-10 ">
+                <main className="col-md-9 col-lg-10 main-content-bg">
                     {/* Header */}
-                    <Header/>
-
+                     <Header/>
                     <Outlet/> {/* Placeholder for nested routes */}
                 </main>
             </div>

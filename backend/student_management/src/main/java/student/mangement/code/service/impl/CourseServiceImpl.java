@@ -15,7 +15,6 @@ import student.mangement.code.model.User;
 import student.mangement.code.repository.CourseRepository;
 import student.mangement.code.service.CourseService;
 
-
 @Service
 public class CourseServiceImpl implements CourseService {
 	@Autowired
@@ -27,7 +26,7 @@ public class CourseServiceImpl implements CourseService {
 		Optional<Course> course = courseRepository.findById(courseId);
 		return course.isEmpty() ? null : course.get();
 	}
-	
+
 	@Override
 	public List<Course> findAllCourses() {
 		return courseRepository.findAll();
@@ -38,8 +37,8 @@ public class CourseServiceImpl implements CourseService {
 		Pageable pageable = PageRequest.of(page, size);
 		List<Course> courseList = courseRepository.findByPage(pageable);
 		return courseList.stream()
-		.map(course -> new CourseDTO(course, (int)countStudentsOfCourse(course.getCourseId())))
-		.toList();
+				.map(course -> new CourseDTO(course, (int) countStudentsOfCourse(course.getCourseId())))
+				.toList();
 	}
 
 	@Override
@@ -52,8 +51,8 @@ public class CourseServiceImpl implements CourseService {
 		Course course = findCourseByCourseId(courseId);
 		List<User> userList = course.getUsers();
 		return userList.stream()
-			.filter(user -> user.getAuthorities().stream().anyMatch(a -> "ROLE_STUDENT".equals(a.getAuthority())))
-			.toList();
+				.filter(user -> user.getAuthorities().stream().anyMatch(a -> "ROLE_STUDENT".equals(a.getAuthority())))
+				.toList();
 	}
 
 	@Override
@@ -61,8 +60,8 @@ public class CourseServiceImpl implements CourseService {
 		Course course = findCourseByCourseId(courseId);
 		List<User> userList = course.getUsers();
 		return userList.stream()
-			.filter(user -> user.getAuthorities().stream().anyMatch(a -> "ROLE_TEACHER".equals(a.getAuthority())))
-			.toList();
+				.filter(user -> user.getAuthorities().stream().anyMatch(a -> "ROLE_TEACHER".equals(a.getAuthority())))
+				.toList();
 	}
 
 	@Override
@@ -70,8 +69,8 @@ public class CourseServiceImpl implements CourseService {
 		Course course = findCourseByCourseId(courseId);
 		List<User> userList = course.getUsers();
 		return userList.stream()
-			.filter(user -> user.getAuthorities().stream().anyMatch(a -> "ROLE_STUDENT".equals(a.getAuthority())))
-			.count();
+				.filter(user -> user.getAuthorities().stream().anyMatch(a -> "ROLE_STUDENT".equals(a.getAuthority())))
+				.count();
 	}
 
 	@Override
@@ -79,8 +78,8 @@ public class CourseServiceImpl implements CourseService {
 		Course course = findCourseByCourseId(courseId);
 		List<User> userList = course.getUsers();
 		return userList.stream()
-			.filter(user -> user.getAuthorities().stream().anyMatch(a -> "ROLE_TEACHER".equals(a.getAuthority())))
-			.count();
+				.filter(user -> user.getAuthorities().stream().anyMatch(a -> "ROLE_TEACHER".equals(a.getAuthority())))
+				.count();
 	}
 
 	@Override
@@ -121,6 +120,16 @@ public class CourseServiceImpl implements CourseService {
 		courseRepository.save(course);
 	}
 
-	
+	@Override
+	public void deleteUserFromCourse(User user, Course course) {
+		System.out.println("deleteUserFromCourse");
+		List<User> userList = course.getUsers();
+
+		if (userList != null) {
+			userList.removeIf(u -> u.getEmail().equals(user.getEmail()));
+			courseRepository.save(course);
+		}
+
+	}
 
 }

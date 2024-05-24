@@ -51,7 +51,7 @@ const StudentTable = (props: StudentTableProps) => {
                         <th scope="col" className="table-header-bg text-white" style={{ width: '5%' }}>
                             <input type="checkbox" checked={selectedStudents.length == students.length} onChange={handleSelectAllToggle} />
                         </th>
-                        <th scope="col" className="table-header-bg text-white" style={{ width: '10%' }}>#</th>
+                        <th scope="col" className="table-header-bg text-white" style={{ width: '10%' }}>ID</th>
                         <th scope="col" className="table-header-bg text-white" style={{ width: '20%' }}>First Name</th>
                         <th scope="col" className="table-header-bg text-white" style={{ width: '20%' }}>Last Name</th>
                         <th scope="col" className="table-header-bg text-white" style={{ width: '50%' }}>Email</th>
@@ -59,9 +59,9 @@ const StudentTable = (props: StudentTableProps) => {
                 </thead>
                 <tbody>
                     {displayedStudents.map((student, index) => (
-                        <tr key={index}>
+                        <tr key={student.userId}>
                             <td><input type="checkbox" onChange={() => handleCheckBoxToggle(student.email)} checked={selectedStudents.includes(student.email)} /></td>
-                            <th scope="row">{index + 1}</th>
+                            <th scope="row">{student.userId}</th>
                             <td>{student.firstName}</td>
                             <td>{student.lastName}</td>
                             <td style={{ overflowX: 'hidden' }}>{student.email}</td>
@@ -92,23 +92,8 @@ const InsertStudentToCourseModal = (props: InsertStudentToCourseModalProps) => {
     const [students, setStudents] = useState<any[]>([]) // List of students is not in the course
     const [showModal, setShowModal] = useState<boolean>(show)
 
-    const fetchAllstudents = async () => {
-        try {
-            const response = await api.get(`/api/v1/allStudents`);
-            if (response.status == 200) {
-                const allstudents = response.data
-                const insertablestudents = allstudents.filter((student: any) => !exceptStudents.some(exceptstudent => exceptstudent.email === student.email))
-                setStudents(insertablestudents)
 
-            } else {
-                throw new Error("Can't fetch this api")
-            }
 
-        } catch (err) {
-            throw err;
-        }
-
-    }
 
     const handleCloseModal = () => {
         setShowModal(false)
@@ -138,8 +123,26 @@ const InsertStudentToCourseModal = (props: InsertStudentToCourseModalProps) => {
         setShowModal(show)
     }, [show])
     useEffect(() => {
+        const fetchAllstudents = async () => {
+            try {
+                const response = await api.get(`/api/v1/allStudents`);
+                if (response.status == 200) {
+                    const allStudents = response.data
+                    // console.log("allStudents ", allStudents)
+                    const insertableStudents = allStudents.filter((student: any) => exceptStudents.every(exceptStudent => exceptStudent.email !== student.email))
+                    setStudents(insertableStudents)
+    
+                } else {
+                    throw new Error("Can't fetch this api")
+                }
+    
+            } catch (err) {
+                throw err;
+            }
+    
+        }
         fetchAllstudents()
-    }, [])
+    }, [exceptStudents])
 
     const [selectedStudents, setSelectedStudents] = useState<string[]>([])  // Use email to identify that student
     const handleOnSelectStudent = (selectedStudents: string[]) => {
